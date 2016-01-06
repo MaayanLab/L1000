@@ -17,20 +17,22 @@ const config = {
   dirTest   : 'tests',
 
   // ----------------------------------
+  // Database Configuration
+  // ----------------------------------
+  dbUrl: '146.203.54.131:27017/L1000App',
+
+  // ----------------------------------
   // Server Configuration
   // ----------------------------------
   serverHost : 'localhost',
-  serverPort : process.env.PORT || 3000,
+  serverPort : 3000,
 
   // ----------------------------------
   // Compiler Configuration
   // ----------------------------------
   compilerCssModules     : true,
   compilerEnableHmr      : false,
-  compilerGlobals         : {
-    React : 'react',
-    ReactDOM : 'react-dom',
-  },
+  compilerGlobals         : {},
   compilerSourceMaps     : true,
   compilerHashType       : 'hash',
   compilerFailOnWarning : false,

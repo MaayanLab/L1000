@@ -2,6 +2,8 @@ import koa from 'koa';
 import webpack from 'webpack';
 import webpackConfig from '../build/webpack.config';
 import serve from 'koa-static';
+import compress from 'koa-compress';
+import logger from 'koa-logger';
 import _debug from 'debug';
 import config from '../config';
 
@@ -9,7 +11,13 @@ const debug = _debug('app:server');
 const paths = config.utilsPaths;
 const app = koa();
 
-// This rewrites all routes requests to the root /index.html file
+app.use(logger());
+app.use(compress());
+
+// Require routes
+require('./routes')(app);
+
+// This rewrites all other routes requests to the root /index.html file
 // (ignoring file requests). If you want to implement isomorphic
 // rendering, you'll want to remove this middleware.
 app.use(require('koa-connect-history-api-fallback')({

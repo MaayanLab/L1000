@@ -19,7 +19,7 @@ export default function (compiler, publicPath) {
     stats: config.compilerStats,
   });
 
-  return function* run(next) {
+  return function *run(next) {
     // eslint doesn't think so, but ctx, req, and runNext are modified later
     /* eslint prefer-const: 0 */
     let ctx = this;

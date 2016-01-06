@@ -1,13 +1,18 @@
 {
   "parser"  : "babel-eslint",
   "extends" : "airbnb",
+  "ecmaFeatures": {
+    "generators": true
+  },
   "globals" : {
     "__DEV__"      : false,
     "__PROD__"     : false,
     "__DEBUG__"    : false,
     "__DEBUG_NEW_WINDOW__" : false,
     "__BASENAME__" : false,
-    "React": true,
-    "ReactDOM": true
+  },
+  "rules": {
+    "generator-star-spacing": 1,
+    "require-yield": 1,
   }
 }

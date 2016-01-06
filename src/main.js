@@ -1,3 +1,5 @@
+import React from 'react';
+import ReactDOM from 'react-dom';
 import { createHistory, useBasename } from 'history';
 import { syncReduxAndRouter } from 'redux-simple-router';
 import routes from './routes';
@@ -5,7 +7,7 @@ import Root from './containers/Root';
 import configureStore from './redux/configureStore';
 
 const history = useBasename(createHistory)({
-  basename: __BASENAME__,
+  basename: '/L1000',
 });
 const store = configureStore(window.__INITIAL_STATE__);
 

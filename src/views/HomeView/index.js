@@ -1,3 +1,4 @@
+import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router';
 import { actions as counterActions } from '../../redux/modules/counter';
@@ -11,7 +12,7 @@ import styles from './HomeView.scss';
 const mapStateToProps = (state) => ({
   counter: state.counter,
 });
-export class HomeView extends React.Component {
+export class HomeView extends Component {
   static propTypes = {
     counter: React.PropTypes.number.isRequired,
     doubleAsync: React.PropTypes.func.isRequired,

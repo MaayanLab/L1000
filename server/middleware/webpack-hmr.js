@@ -8,7 +8,7 @@ export default function (compiler, opts) {
   debug('Enable Webpack Hot Module Replacement (HMR).');
 
   const middleware = webpackHotMiddleware(compiler, opts);
-  return function* run(next) {
+  return function *run(next) {
     // nextStep is modified later
     /* eslint prefer-const: 0 */
     let nextStep = yield applyExpressMiddleware(middleware, this.req, this.res);

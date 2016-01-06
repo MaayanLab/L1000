@@ -1,16 +1,15 @@
 import React, { Component } from 'react';
 import { Link } from 'react-router';
 
-export class AboutView extends Component {
+export class NotFoundView extends Component {
   render() {
     return (
       <div className="container text-center">
-        <h1>This is the about view!</h1>
-        <hr />
+        <h1>404</h1>
         <Link to="/">Back To Home View</Link>
       </div>
     );
   }
 }
 
-export default AboutView;
+export default NotFoundView;
