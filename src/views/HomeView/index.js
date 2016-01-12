@@ -1,7 +1,9 @@
 import React, { Component } from 'react';
+import { pushPath } from 'redux-simple-router';
 import { connect } from 'react-redux';
-import { Link } from 'react-router';
-import { actions as counterActions } from '../../redux/modules/counter';
+import { fetchExperiments } from '../../redux/modules/experiments';
+import Navigation from '../../containers/Navigation';
+import Grid from '../../components/Grid';
 import styles from './HomeView.scss';
 
 // We define mapStateToProps where we'd normally use
@@ -10,50 +12,48 @@ import styles from './HomeView.scss';
 // the component can be tested w/ and w/o being connected.
 // See: http://rackt.github.io/redux/docs/recipes/WritingTests.html
 const mapStateToProps = (state) => ({
-  counter: state.counter,
+  experiments: state.experiments,
 });
 export class HomeView extends Component {
-  static propTypes = {
-    counter: React.PropTypes.number.isRequired,
-    doubleAsync: React.PropTypes.func.isRequired,
-    increment: React.PropTypes.func.isRequired,
-  }
-
   componentDidMount() {
-    this.props.increment.bind(this);
+    this.props.dispatch(fetchExperiments());
   }
 
-  componentWillReceiveProps(props) {
-    props.increment.bind(this);
-  }
-
-  _increment = () => {
-    this.props.increment(1);
+  _handleSelectTile = (experimentId, /* compoundIndex */) => {
+    this.props.dispatch(pushPath(`/experiments/${experimentId}/compounds/new`));
   }
 
   render() {
     return (
-      <div className="container text-center">
-        <h1>Welcome to the React Redux Starter Kit</h1>
-        <h2>
-          Sample Counter:&nbsp;
-          <span className={styles['counter--green']}>{this.props.counter}</span>
-        </h2>
-        <button className="btn btn-default"
-          onClick={this._increment}
-        >
-          Increment
-        </button>
-        <button className="btn btn-default"
-          onClick={this.props.doubleAsync}
-        >
-          Double (Async)
-        </button>
-        <hr />
-        <Link to="/about">Go To About View</Link>
+      <div className="wrapper">
+        <Navigation />
+        <div className="container text-center">
+          <h1>Welcome to the L1000 Ordering System</h1>
+          <div className={styles['grid-wrapper']}>
+          {
+            this.props.experiments.data.map((experiment, index) =>
+              <Grid
+                key={index}
+                experiment={experiment}
+                onSelectTile={this._handleSelectTile}
+              />
+            )
+          }
+          </div>
+        </div>
       </div>
     );
   }
 }
 
-export default connect(mapStateToProps, counterActions)(HomeView);
+HomeView.propTypes = {
+  dispatch: React.PropTypes.func.isRequired,
+  experiments: React.PropTypes.object.isRequired,
+};
+
+HomeView.defaultProps = {
+  dispatch: () => {},
+  experiments: {},
+};
+
+export default connect(mapStateToProps)(HomeView);

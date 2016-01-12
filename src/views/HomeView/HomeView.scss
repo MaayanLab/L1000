@@ -1,8 +1,5 @@
-.counter {
-  font-weight: bold;
-}
-
-.counter--green {
-  composes: counter;
-  color: rgb(25,200,25);
+.grid-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }

@@ -1,0 +1,35 @@
+.board-outer {
+  height: 440px;
+  width: 400px;
+}
+
+.board {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-wrap: wrap;
+}
+
+%cell {
+  border: 1px solid white;
+}
+
+.single-dose-cell {
+  @extend %cell;
+  height: percentage(1/20);
+  width: percentage(1/18);
+}
+
+.dose-response-cell {
+  @extend %cell;
+  height: percentage(1/8);
+  width: percentage(1/7);
+}
+
+.taken {
+  background-color: green;
+}
+
+.available {
+  background-color: red;
+}
