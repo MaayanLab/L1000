@@ -1,7 +1,7 @@
-import React, { Component } from 'react';
+import React, { Component, PropTypes } from 'react';
 import { pushPath } from 'redux-simple-router';
 import { connect } from 'react-redux';
-import { fetchExperiments } from '../../redux/modules/experiments';
+import { loadExperiments } from '../../actions';
 import Navigation from '../../containers/Navigation';
 import Grid from '../../components/Grid';
 import styles from './HomeView.scss';
@@ -12,18 +12,19 @@ import styles from './HomeView.scss';
 // the component can be tested w/ and w/o being connected.
 // See: http://rackt.github.io/redux/docs/recipes/WritingTests.html
 const mapStateToProps = (state) => ({
-  experiments: state.experiments,
+  entities: state.entities,
 });
 export class HomeView extends Component {
   componentDidMount() {
-    this.props.dispatch(fetchExperiments());
+    this.props.loadExperiments();
   }
 
   _handleSelectTile = (experimentId, /* compoundIndex */) => {
-    this.props.dispatch(pushPath(`/experiments/${experimentId}/compounds/new`));
+    this.props.pushPath(`/experiments/${experimentId}/compounds/new`);
   }
 
   render() {
+    const { entities } = this.props;
     return (
       <div className="wrapper">
         <Navigation />
@@ -31,10 +32,10 @@ export class HomeView extends Component {
           <h1>Welcome to the L1000 Ordering System</h1>
           <div className={styles['grid-wrapper']}>
           {
-            this.props.experiments.data.map((experiment, index) =>
+            !!entities && Object.keys(entities.experiments).map((experimentId, index) =>
               <Grid
                 key={index}
-                experiment={experiment}
+                experiment={entities.experiments[experimentId]}
                 onSelectTile={this._handleSelectTile}
               />
             )
@@ -47,13 +48,13 @@ export class HomeView extends Component {
 }
 
 HomeView.propTypes = {
-  dispatch: React.PropTypes.func.isRequired,
-  experiments: React.PropTypes.object.isRequired,
+
+  entities: PropTypes.object,
+  pushPath: PropTypes.func.isRequired,
+  loadExperiments: PropTypes.func.isRequired,
 };
 
-HomeView.defaultProps = {
-  dispatch: () => {},
-  experiments: {},
-};
-
-export default connect(mapStateToProps)(HomeView);
+export default connect(mapStateToProps, {
+  pushPath,
+  loadExperiments,
+})(HomeView);
