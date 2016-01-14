@@ -1,21 +1,32 @@
-@import 'base';
+@import 'variables';
 @import 'vendor/normalize';
 
-// Some best-practice CSS that's useful for most apps
-// Just remove them if they're not what you want
 html {
   box-sizing: border-box;
 }
 
 html,
 body {
+  font-family: 'Lato', sans-serif;
+  height: 100%;
   margin: 0;
   padding: 0;
-  height: 100%;
 }
 
-*,
-*:before,
-*:after {
+* {
   box-sizing: inherit;
+
+  &:before,
+  &:after {
+    box-sizing: inherit;
+  }
+}
+
+footer {
+  background-color: $light-gray;
+  margin-top: 40px;
+  height: $footer-height - 40px;
+  // margin-top: 40px;
+  position: relative;
+  width: 100%;
 }

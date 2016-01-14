@@ -2,8 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { pushPath } from 'redux-simple-router';
 import { connect } from 'react-redux';
 import { loadExperiments } from '../../actions';
-import Navigation from '../../containers/Navigation';
-import Grid from '../../components/Grid';
+import Experiment from '../../components/Experiment';
 import styles from './HomeView.scss';
 
 // We define mapStateToProps where we'd normally use
@@ -20,21 +19,20 @@ export class HomeView extends Component {
   }
 
   _handleSelectTile = (experimentId, compoundIndex) => {
-    this.props.pushPath(`/experiments/${experimentId}/compounds/new?index=${compoundIndex}`);
+    this.props.pushPath(`/experiments/${experimentId}/compounds/create?index=${compoundIndex}`);
   }
 
   render() {
     const { entities } = this.props;
     return (
       <div className="wrapper">
-        <Navigation />
-        <div className="container text-center">
-          <h1>Welcome to the L1000 Ordering System</h1>
-          <div className={styles['grid-wrapper']}>
+        <div className="container">
+          <h1 className="text-center">Welcome to the L1000 Ordering System</h1>
+          <div className={styles['experiment-wrapper']}>
           {
             // Iterate over entities.experiments if it exists, and create a grid for each one
             !!entities && Object.keys(entities.experiments).map((experimentId, index) =>
-              <Grid
+              <Experiment
                 key={index}
                 experiment={entities.experiments[experimentId]}
                 compounds={entities.compounds}

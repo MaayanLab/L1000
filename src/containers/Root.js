@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { Provider } from 'react-redux';
 import { Router } from 'react-router';
+import Footer from '../components/Footer';
 
 export default class Root extends Component {
   static propTypes = {
@@ -13,6 +14,7 @@ export default class Root extends Component {
     return (
       <Router history={this.props.history}>
         {this.props.routes}
+        <Footer />
       </Router>
     );
   }
@@ -38,6 +40,7 @@ export default class Root extends Component {
         <div style={{ height: '100%' }}>
           {this.content}
           {this.devTools}
+          <Footer />
         </div>
       </Provider>
     );

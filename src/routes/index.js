@@ -16,7 +16,7 @@ export default (
   <Route path="/" component={CoreLayout}>
     <IndexRoute component={HomeView} />
     <Route path="/about" component={AboutView} />
-    <Route path="/experiments/:experimentId/compounds/new" component={AddNewCompound} />
+    <Route path="/experiments/:experimentId/compounds/create" component={AddNewCompound} />
     <Route path="*" component={NotFoundView} />
   </Route>
 );

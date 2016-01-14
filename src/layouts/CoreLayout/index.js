@@ -1,5 +1,9 @@
 import React from 'react';
-import '../styles/core.scss';
+import Navigation from '../Navigation';
+// Import default styles
+import '../../styles/core.scss';
+import coreStyles from './CoreLayout.scss';
+
 // Note: Stateless/function components *will not* hot reload!
 // react-transform *only* works on component classes.
 //
@@ -11,10 +15,12 @@ import '../styles/core.scss';
 // define it with a plain javascript function...
 function CoreLayout({ children }) {
   return (
-    <div className="page-container">
+    <div className={coreStyles.wrapper}>
+      <Navigation />
       <div className="view-container">
         {children}
       </div>
+      <div className={coreStyles['footer-push']} />
     </div>
   );
 }

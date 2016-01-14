@@ -1,9 +1,9 @@
 import React, { Component, PropTypes } from 'react';
 import cn from 'classnames';
 import GridItem from '../GridItem';
-import styles from './Grid.scss';
+import styles from './Experiment.scss';
 
-class Grid extends Component {
+class Experiment extends Component {
   get isSingleDose() {
     return this.props.experiment.type === 'Single Dose';
   }
@@ -18,8 +18,8 @@ class Grid extends Component {
     return !!this.props.onSelectTile && this.props.onSelectTile(id, compoundIndex);
   }
   buildRows() {
-    // this.props.experiments.compounds is an array of compound names specific to that experiment
-    // this.props.compounds is an object with compound names as keys
+    // this.props.experiments.compounds is an array of compound _id's specific to that experiment
+    // this.props.compounds is an object with compound _id's as keys
     const { compounds } = this.props.experiment;
     const cellClass = this.isSingleDose
     ? styles['single-dose-cell']
@@ -51,10 +51,15 @@ class Grid extends Component {
     return tiles;
   }
   render() {
+    const { experiment } = this.props;
     return (
-      <div className={styles['board-outer']}>
-        <div className={styles.board}>
-          {this.buildRows()}
+      <div className={styles.experiment}>
+        <h3>{experiment.title}</h3>
+        <h3>{experiment.type}</h3>
+        <div className={styles['board-outer']}>
+          <div className={styles.board}>
+            {this.buildRows()}
+          </div>
         </div>
       </div>
     );
@@ -62,10 +67,10 @@ class Grid extends Component {
 }
 
 
-Grid.propTypes = {
+Experiment.propTypes = {
   experiment: PropTypes.object.isRequired,
   compounds: PropTypes.object.isRequired,
   onSelectTile: PropTypes.func,
 };
 
-export default Grid;
+export default Experiment;
