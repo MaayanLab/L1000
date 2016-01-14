@@ -1,5 +1,4 @@
-.experiment {
-}
+@import '../../styles/variables';
 
 .board-outer {
   height: 440px;
@@ -14,7 +13,7 @@
 }
 
 %cell {
-  border: 1px solid #fff;
+  border: 1px solid $white;
 }
 
 .single-dose-cell {
@@ -30,31 +29,39 @@
 }
 
 .taken {
-  color: #fff;
-  background-color: #337ab7;
-  border-color: #2e6da4;
+  color: $white;
+  background-color: $dark-blue;
+  border-color: $dark-blue-border;
 }
 
 .available {
-  color: #fff;
-  background-color: #5bc0de;
-  border-color: #46b8da;
+  color: $white;
+  background-color: $light-blue;
+  border-color: $light-blue-border;
 
   &:active {
     background-image: none;
-    background-color: #31b0d5;
-    border-color: #269abc;
+    background-color: $medium-blue;
+    border-color: $medium-blue-border;
   }
 
   &:hover {
-    color: #fff;
-    background-color: #31b0d5;
-    border-color: #269abc;
+    color: $white;
+    background-color: $medium-blue;
+    border-color: $medium-blue-border;
   }
 
   &:focus {
-    color: #fff;
-    background-color: #31b0d5;
-    border-color: #1b6d85;
+    color: $white;
+    background-color: $medium-blue;
+    border-color: $teal;
   }
+}
+
+.selected {
+  color: $white;
+  background-color: darken($medium-blue, 5%);
+  border-color: darken($medium-blue-border, 5%);
+  box-shadow: 0 0 10px 5px lighten($medium-blue, 30%);
+  z-index: 10;
 }

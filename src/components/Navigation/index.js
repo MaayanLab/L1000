@@ -1,7 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router';
 import cn from 'classnames';
-import coreStyles from './CoreLayout/CoreLayout.scss';
+import coreStyles from './Navigation.scss';
 
 export default function Navigation(/* props */) {
   return (

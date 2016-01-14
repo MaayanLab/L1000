@@ -5,7 +5,9 @@ export class AddCompoundForm extends Component {
   render() {
     const {
       fields: {
-        compoundName,
+        name,
+        address,
+        compound,
       },
       submitting,
       resetForm,
@@ -14,8 +16,16 @@ export class AddCompoundForm extends Component {
     return (
       <form onSubmit={handleSubmit}>
         <div>
-          <label>Compound Name</label>
-          <input type="text" {...compoundName} />
+          <label>Name</label>
+          <input type="text" {...name} />
+        </div>
+        <div>
+          <label>Address</label>
+          <input type="text" {...address} />
+        </div>
+        <div>
+          <label>Compound</label>
+          <input type="text" {...compound} />
         </div>
         <button disabled={submitting} onClick={resetForm}>
           Clear Values
@@ -37,5 +47,5 @@ AddCompoundForm.propTypes = {
 
 export default reduxForm({
   form: 'AddCompound',
-  fields: ['compoundName'],
+  fields: ['name', 'address', 'compound'],
 })(AddCompoundForm);

@@ -1,6 +1,6 @@
 import { combineReducers } from 'redux';
 import { routeReducer as router } from 'redux-simple-router';
-import { reducer as form } from 'redux-form';
+import { reducer as formReducer } from 'redux-form';
 import merge from 'lodash/object/merge';
 import * as ActionTypes from '../actions';
 
@@ -29,5 +29,14 @@ export default combineReducers({
   entities,
   errorMessage,
   router,
-  form,
+  form: formReducer.plugin({
+    AddCompound: (state, action) => {
+      switch (action.type) {
+        case ActionTypes.ADD_COMPOUND_SUCCESS:
+          return undefined;
+        default:
+          return state;
+      }
+    },
+  }),
 });

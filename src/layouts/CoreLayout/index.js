@@ -1,5 +1,5 @@
 import React from 'react';
-import Navigation from '../Navigation';
+import Navigation from '../../components/Navigation';
 // Import default styles
 import '../../styles/core.scss';
 import coreStyles from './CoreLayout.scss';

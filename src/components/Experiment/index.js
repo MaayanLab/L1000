@@ -42,7 +42,11 @@ class Experiment extends Component {
           <GridItem
             key={i}
             index={i}
-            className={cn([cellClass, styles.available])}
+            className={cn({
+              [cellClass]: true,
+              [styles.available]: i !== this.props.selectedIndex,
+              [styles.selected]: i === this.props.selectedIndex,
+            })}
             onSelectTile={this._handleClick}
           />
         );
@@ -51,11 +55,8 @@ class Experiment extends Component {
     return tiles;
   }
   render() {
-    const { experiment } = this.props;
     return (
       <div className={styles.experiment}>
-        <h3>{experiment.title}</h3>
-        <h3>{experiment.type}</h3>
         <div className={styles['board-outer']}>
           <div className={styles.board}>
             {this.buildRows()}
@@ -68,6 +69,7 @@ class Experiment extends Component {
 
 
 Experiment.propTypes = {
+  selectedIndex: PropTypes.number,
   experiment: PropTypes.object.isRequired,
   compounds: PropTypes.object.isRequired,
   onSelectTile: PropTypes.func,

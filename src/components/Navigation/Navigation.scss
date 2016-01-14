@@ -1,0 +1,29 @@
+@import '../../styles/variables';
+
+.nav-outer {
+  border: 1px solid transparent;
+  border-bottom-color: $dark-gray;
+  margin-bottom: 20px;
+  min-height: $nav-height;
+  padding-bottom: ($nav-height - 20) / 2;
+  padding-top: ($nav-height - 20) / 2;
+  position: relative;
+}
+
+.nav-inner {
+
+  ul {
+    margin: 0;
+  }
+}
+
+.brand {
+  float: left;
+  font-size: 18px;
+  line-height: 20px;
+}
+
+.right-nav {
+  float: right;
+  list-style: none;
+}

@@ -3,37 +3,57 @@ import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import { pushPath } from 'redux-simple-router';
 import { initialize } from 'redux-form';
-import { addCompound } from '../../actions';
+import { addCompound, loadExperiments } from '../../actions';
 import AddCompoundForm from '../../containers/AddCompoundForm';
-// import { addCompound, fetchOneExperiment } from '../../redux/modules/experiment';
-// import styles from './AddNewCompound.scss';
+import Experiment from '../../components/Experiment';
+import styles from './AddNewCompoundView.scss';
 
 const mapStateToProps = (state) => ({
   entities: state.entities,
 });
 export class AddNewCompound extends Component {
-  componentDidMount() {
-    // const { experimentId } = this.props.params;
+  componentWillMount() {
+    this.props.loadExperiments();
   }
 
   _handleSubmit = (formData) => {
-    const { compoundName } = formData;
     const { experimentId } = this.props.params;
     const { index } = this.props.location.query;
-    // TODO: Add compound to experiment at index
-    this.props.addCompound(compoundName, experimentId, index);
+    console.log(formData);
+    this.props.addCompound(formData, experimentId, index);
     // Re-initialize AddCompound Form
     this.props.initialize('AddCompound');
-    this.props.pushPath(`/experiments/${experimentId}/compounds/${index}`);
+    // TODO: Eventually go to an experiment or  compound specific page
+    // this.props.pushPath(`/experiments/${experimentId}/compounds/${index}`);
+    this.props.pushPath('/');
+  }
+
+  _handleSelectTile = (experimentId, compoundIndex) => {
+    this.props.pushPath(`/experiments/${experimentId}/compounds/create?index=${compoundIndex}`);
   }
 
   render() {
+    const { entities } = this.props;
+    const experiment = entities.experiments[this.props.params.experimentId];
     return (
       <div className="wrapper">
-        <div className="container text-center">
-          <h1>Welcome to Add Compound Page</h1>
-          <p>The Experiment ID is: {this.props.params.experimentId}</p>
-          <AddCompoundForm onSubmit={this._handleSubmit} />
+        <div className="container">
+          <h1 className="text-center">Add a Compound</h1>
+          <div className={styles['form-wrapper']}>
+            <AddCompoundForm onSubmit={this._handleSubmit} />
+          </div>
+          <div className={styles.experiment}>
+            {
+              !!entities && !!experiment ?
+              <Experiment
+                experiment={experiment}
+                compounds={entities.compounds}
+                selectedIndex={parseInt(this.props.location.query.index, 10)}
+                onSelectTile={this._handleSelectTile}
+              />
+              : null
+            }
+          </div>
         </div>
       </div>
     );
@@ -42,14 +62,17 @@ export class AddNewCompound extends Component {
 
 AddNewCompound.propTypes = {
   params: PropTypes.object.isRequired,
+  entities: PropTypes.object.isRequired,
   location: PropTypes.object.isRequired,
   pushPath: PropTypes.func.isRequired,
   initialize: PropTypes.func.isRequired,
   addCompound: PropTypes.func.isRequired,
+  loadExperiments: PropTypes.func.isRequired,
 };
 
 export default connect(mapStateToProps, {
   pushPath,
   initialize,
   addCompound,
+  loadExperiments,
 })(AddNewCompound);

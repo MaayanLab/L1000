@@ -1,6 +1,6 @@
 /* @flow */
 import { CALL_API, Schemas } from '../middleware/api';
-import isEqual from 'lodash/lang/isEqual';
+// import isEqual from 'lodash/lang/isEqual';
 
 export const EXPERIMENT_REQUEST = 'EXPERIMENT_REQUEST';
 export const EXPERIMENT_SUCCESS = 'EXPERIMENT_SUCCESS';
@@ -68,11 +68,11 @@ function addCompoundRequest(compound, experimentId, index) {
 // Fetches a single experiment from API.
 // Relies on the custom API middleware defined in ../middleware/api.js.
 export function addCompound(compound, experimentId, index) {
-  return (dispatch, getState) => {
-    const compoundFromState = getState().entities.compounds[compound.name];
-    if (compoundFromState && isEqual(compound, compoundFromState)) {
-      return null;
-    }
+  return (dispatch) => {
+    // const compoundFromState = getState().entities.compounds[compound._id];
+    // if (compoundFromState && isEqual(compound, compoundFromState)) {
+    //   return null;
+    // }
     return dispatch(addCompoundRequest(compound, experimentId, index));
   };
 }

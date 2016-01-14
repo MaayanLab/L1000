@@ -14,13 +14,8 @@ if (process.env.NODE_ENV === 'production') {
 function callApi(endpoint, schema, body) {
   const fullUrl = (endpoint.indexOf(API_ROOT) === -1) ? API_ROOT + endpoint : endpoint;
 
-  let apiPromise = axios.get(fullUrl);
-  if (body) {
-    apiPromise = axios.post(fullUrl, body);
-  }
-  return apiPromise
-    .then(response => Object.assign({}, normalize(response.data, schema)))
-    .catch(response => console.log(response));
+  const apiPromise = !!body ? axios.post(fullUrl, body) : axios.get(fullUrl);
+  return apiPromise.then(response => Object.assign({}, normalize(response.data, schema)));
 }
 
 // Normalize JSON response using normalizr

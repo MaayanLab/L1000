@@ -11,24 +11,24 @@ let Experiments = db.get('experiments');
 Compounds.drop();
 Experiments.drop();
 
-Compounds.insert({ name: 'CompoundOne' }, (coErr, compoundOne) => {
-  Compounds.insert({ name: 'CompoundTwo' }, (ctErr, compoundTwo) => {
-    Compounds.insert({ name: 'CompoundThree' }, (cthErr, compoundThree) => {
-      Experiments.insert({
-        title: 'Experiment 1',
-        type: 'Single Dose',
-        description: 'Description of Experiment 1. Description of Experiment 1. ' +
-          'Description of Experiment 1.',
-        compounds: [compoundOne._id, compoundTwo._id, compoundThree._id],
-      });
-      Experiments.insert({
-        title: 'Experiment 2',
-        type: 'Dose Response',
-        description: 'Description of Experiment 2. Description of Experiment 2. ' +
-          'Description of Experiment 2.',
-        compounds: [compoundOne._id, compoundTwo._id],
-      });
-    });
+Compounds.insert({
+  name: 'Michael McDermott',
+  address: 'One Park Avenue, New York, NY',
+  compound: 'Compound One',
+}, (coErr, compoundOne) => {
+  Experiments.insert({
+    title: 'Experiment 1',
+    type: 'Single Dose',
+    description: 'Description of Experiment 1. Description of Experiment 1. ' +
+      'Description of Experiment 1.',
+    compounds: [compoundOne._id],
+  });
+  Experiments.insert({
+    title: 'Experiment 2',
+    type: 'Dose Response',
+    description: 'Description of Experiment 2. Description of Experiment 2. ' +
+      'Description of Experiment 2.',
+    compounds: [compoundOne._id],
   });
 });
 
