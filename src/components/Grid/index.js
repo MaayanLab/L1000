@@ -18,6 +18,8 @@ class Grid extends Component {
     return !!this.props.onSelectTile && this.props.onSelectTile(id, compoundIndex);
   }
   buildRows() {
+    // this.props.experiments.compounds is an array of compound names specific to that experiment
+    // this.props.compounds is an object with compound names as keys
     const { compounds } = this.props.experiment;
     const cellClass = this.isSingleDose
     ? styles['single-dose-cell']
@@ -26,21 +28,25 @@ class Grid extends Component {
     const numTiles = this.rowLength * this.colLength;
     for (let i = 0; i < numTiles; i++) {
       const compoundExists = !!compounds[i];
-      // For class names, always add the class from cellClass above. If a compound exists, the cell
-      // is taken, so add the styles.taken class, otherwise, add the styles.available class.
-      tiles.push(
-        <GridItem
-          key={i}
-          index={i}
-          className={cn({
-            [cellClass]: true,
-            [styles.available]: !compoundExists,
-            [styles.taken]: compoundExists,
-          })}
-          compound={compounds[i]}
-          onSelectTile={this._handleClick}
-        />
-      );
+      if (compoundExists) {
+        tiles.push(
+          <GridItem
+            key={i}
+            index={i}
+            compound={this.props.compounds[compounds[i]]}
+            className={cn([cellClass, styles.taken])}
+          />
+        );
+      } else {
+        tiles.push(
+          <GridItem
+            key={i}
+            index={i}
+            className={cn([cellClass, styles.available])}
+            onSelectTile={this._handleClick}
+          />
+        );
+      }
     }
     return tiles;
   }
@@ -57,7 +63,8 @@ class Grid extends Component {
 
 
 Grid.propTypes = {
-  experiment: PropTypes.object,
+  experiment: PropTypes.object.isRequired,
+  compounds: PropTypes.object.isRequired,
   onSelectTile: PropTypes.func,
 };
 

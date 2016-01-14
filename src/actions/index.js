@@ -1,5 +1,6 @@
 /* @flow */
 import { CALL_API, Schemas } from '../middleware/api';
+import isEqual from 'lodash/lang/isEqual';
 
 export const EXPERIMENT_REQUEST = 'EXPERIMENT_REQUEST';
 export const EXPERIMENT_SUCCESS = 'EXPERIMENT_SUCCESS';
@@ -34,52 +35,45 @@ export const EXPERIMENTS_REQUEST = 'EXPERIMENTS_REQUEST';
 export const EXPERIMENTS_SUCCESS = 'EXPERIMENTS_SUCCESS';
 export const EXPERIMENTS_FAILURE = 'EXPERIMENTS_FAILURE';
 
-// Fetches a single experiment from API.
-// Relies on the custom API middleware defined in ../middleware/api.js.
-function fetchExperiments() {
-  return {
-    [CALL_API]: {
-      types: [EXPERIMENTS_REQUEST, EXPERIMENTS_SUCCESS, EXPERIMENTS_FAILURE],
-      endpoint: `experiments`,
-      schema: Schemas.EXPERIMENT_ARRAY,
-    },
-  };
-}
-
 // Relies on Redux Thunk middleware.
 export function loadExperiments() {
   // return fetchExperiments();
   return (dispatch) => {
-    return dispatch(fetchExperiments());
+    return dispatch({
+      [CALL_API]: {
+        types: [EXPERIMENTS_REQUEST, EXPERIMENTS_SUCCESS, EXPERIMENTS_FAILURE],
+        endpoint: `experiments`,
+        schema: Schemas.EXPERIMENT_ARRAY,
+      },
+    });
   };
 }
 
-export const COMPOUNDS_REQUEST = 'COMPOUNDS_REQUEST';
-export const COMPOUNDS_SUCCESS = 'COMPOUNDS_SUCCESS';
-export const COMPOUNDS_FAILURE = 'COMPOUNDS_FAILURE';
+export const ADD_COMPOUND_REQUEST = 'ADD_COMPOUND_REQUEST';
+export const ADD_COMPOUND_SUCCESS = 'ADD_COMPOUND_SUCCESS';
+export const ADD_COMPOUND_FAILURE = 'ADD_COMPOUND_FAILURE';
 
-// Fetches a single experiment from API.
-// Relies on the custom API middleware defined in ../middleware/api.js.
-function fetchCompounds() {
+
+function addCompoundRequest(compound, experimentId, index) {
   return {
     [CALL_API]: {
-      types: [COMPOUNDS_REQUEST, COMPOUNDS_SUCCESS, COMPOUNDS_FAILURE],
-      endpoint: `experiments`,
-      schema: Schemas.COMPOUND_ARRAY,
+      types: [ADD_COMPOUND_REQUEST, ADD_COMPOUND_SUCCESS, ADD_COMPOUND_FAILURE],
+      endpoint: `experiments/${experimentId}/compounds/create?index=${index}`,
+      schema: Schemas.EXPERIMENT,
+      body: compound,
     },
   };
 }
 
-// Fetches experiments from API unless they are cached.
-// Relies on Redux Thunk middleware.
-export function loadCompounds(experimentId, requiredFields = []) {
+// Fetches a single experiment from API.
+// Relies on the custom API middleware defined in ../middleware/api.js.
+export function addCompound(compound, experimentId, index) {
   return (dispatch, getState) => {
-    const experiment = getState().entities.experiments[experimentId];
-    if (experiment && requiredFields.every(key => experiment.hasOwnProperty(key))) {
+    const compoundFromState = getState().entities.compounds[compound.name];
+    if (compoundFromState && isEqual(compound, compoundFromState)) {
       return null;
     }
-
-    return dispatch(fetchCompounds(experimentId));
+    return dispatch(addCompoundRequest(compound, experimentId, index));
   };
 }
 

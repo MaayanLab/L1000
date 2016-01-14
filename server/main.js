@@ -2,6 +2,8 @@ import koa from 'koa';
 import webpack from 'webpack';
 import webpackConfig from '../build/webpack.config';
 import serve from 'koa-static';
+import cors from 'koa-cors';
+import bodyParser from 'koa-bodyparser';
 import compress from 'koa-compress';
 import logger from 'koa-logger';
 import _debug from 'debug';
@@ -11,6 +13,8 @@ const debug = _debug('app:server');
 const paths = config.utilsPaths;
 const app = koa();
 
+app.use(cors());
+app.use(bodyParser());
 app.use(logger());
 app.use(compress());
 

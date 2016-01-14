@@ -1,5 +1,5 @@
 import { Schema, arrayOf, normalize } from 'normalizr';
-import 'isomorphic-fetch';
+import axios from 'axios';
 
 let API_ROOT = '';
 
@@ -11,25 +11,22 @@ if (process.env.NODE_ENV === 'production') {
 
 // Fetches an API response and normalizes the result JSON according to schema.
 // This makes every API response have the same shape, regardless of how nested it was.
-function callApi(endpoint, schema) {
+function callApi(endpoint, schema, body) {
   const fullUrl = (endpoint.indexOf(API_ROOT) === -1) ? API_ROOT + endpoint : endpoint;
 
-  return fetch(fullUrl)
-    .then(response =>
-      response.json().then(json => ({ json, response }))
-    ).then(({ json, response }) => {
-      if (!response.ok) {
-        // return Promise.reject(json);
-        console.log(json);
-      }
-      return Object.assign({}, normalize(json, schema));
-    });
+  let apiPromise = axios.get(fullUrl);
+  if (body) {
+    apiPromise = axios.post(fullUrl, body);
+  }
+  return apiPromise
+    .then(response => Object.assign({}, normalize(response.data, schema)))
+    .catch(response => console.log(response));
 }
 
 // Normalize JSON response using normalizr
 
 const compoundSchema = new Schema('compounds', {
-  idAttribute: 'name',
+  idAttribute: '_id',
 });
 
 const experimentSchema = new Schema('experiments', {
@@ -53,6 +50,7 @@ export const Schemas = {
 };
 
 export const CALL_API = Symbol('Call API');
+export const POST_TO_API = Symbol('Post to API');
 
 // A Redux middleware that interprets actions with CALL_API info specified.
 // Performs the call and promises when such actions are dispatched.
@@ -63,7 +61,7 @@ export default store => next => action => {
   }
 
   let { endpoint } = callAPI;
-  const { schema, types } = callAPI;
+  const { schema, types, body } = callAPI;
 
   if (typeof endpoint === 'function') {
     endpoint = endpoint(store.getState());
@@ -91,14 +89,17 @@ export default store => next => action => {
   const [requestType, successType, failureType] = types;
   next(actionWith({ type: requestType }));
 
-  return callApi(endpoint, schema).then(
-    response => next(actionWith({
-      response,
-      type: successType,
-    })),
-    error => next(actionWith({
-      type: failureType,
-      error: error.message || 'Something bad happened',
-    }))
-  );
+  return callApi(endpoint, schema, body)
+    .then(response =>
+      next(actionWith({
+        response,
+        type: successType,
+      }))
+    )
+    .catch(error =>
+      next(actionWith({
+        type: failureType,
+        error: error.message || 'Something bad happened',
+      }))
+    );
 };

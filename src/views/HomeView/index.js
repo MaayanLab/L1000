@@ -19,8 +19,8 @@ export class HomeView extends Component {
     this.props.loadExperiments();
   }
 
-  _handleSelectTile = (experimentId, /* compoundIndex */) => {
-    this.props.pushPath(`/experiments/${experimentId}/compounds/new`);
+  _handleSelectTile = (experimentId, compoundIndex) => {
+    this.props.pushPath(`/experiments/${experimentId}/compounds/new?index=${compoundIndex}`);
   }
 
   render() {
@@ -32,10 +32,12 @@ export class HomeView extends Component {
           <h1>Welcome to the L1000 Ordering System</h1>
           <div className={styles['grid-wrapper']}>
           {
+            // Iterate over entities.experiments if it exists, and create a grid for each one
             !!entities && Object.keys(entities.experiments).map((experimentId, index) =>
               <Grid
                 key={index}
                 experiment={entities.experiments[experimentId]}
+                compounds={entities.compounds}
                 onSelectTile={this._handleSelectTile}
               />
             )
@@ -48,7 +50,6 @@ export class HomeView extends Component {
 }
 
 HomeView.propTypes = {
-
   entities: PropTypes.object,
   pushPath: PropTypes.func.isRequired,
   loadExperiments: PropTypes.func.isRequired,

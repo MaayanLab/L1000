@@ -1,14 +1,15 @@
 import { combineReducers } from 'redux';
 import { routeReducer as router } from 'redux-simple-router';
+import { reducer as form } from 'redux-form';
 import merge from 'lodash/object/merge';
 import * as ActionTypes from '../actions';
 
 // Updates an entity cache in response to any action with response.entities.
 function entities(state = { experiments: {}, compounds: {} }, action) {
-  if (action.response && action.response.entities) {
-    return merge({}, state, action.response.entities);
+  const { response } = action;
+  if (response && response.entities) {
+    return merge({}, state, response.entities);
   }
-
   return state;
 }
 
@@ -21,7 +22,6 @@ function errorMessage(state = null, action) {
   } else if (error) {
     return action.error;
   }
-
   return state;
 }
 
@@ -29,4 +29,5 @@ export default combineReducers({
   entities,
   errorMessage,
   router,
+  form,
 });

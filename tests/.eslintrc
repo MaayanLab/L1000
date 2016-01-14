@@ -4,6 +4,7 @@
     "mocha" : true
   },
   "globals" : {
+    "axios"  : false,
     "expect" : false,
     "should" : false,
     "sinon"  : false
