@@ -8,15 +8,19 @@ import { Route, IndexRoute } from 'react-router';
 // your current file is.
 import CoreLayout from 'layouts/CoreLayout';
 import HomeView from 'views/HomeView';
-import AddNewCompound from 'views/AddNewCompoundView';
 import AboutView from 'views/AboutView';
+import RegisterView from 'views/RegisterView';
+// import LoginView from 'views/LoginView';
+import AddNewCompound from 'views/AddNewCompoundView';
 import NotFoundView from 'views/NotFoundView';
 
 export default (
   <Route path="/" component={CoreLayout}>
     <IndexRoute component={HomeView} />
     <Route path="/about" component={AboutView} />
-    <Route path="/experiments/:experimentId/compounds/create" component={AddNewCompound} />
+    <Route path="/register" component={RegisterView} />
+    {/* <Route path="/login" component={LoginView} /> */}
+    <Route path="/experiments/:experimentId/compounds/add" component={AddNewCompound} />
     <Route path="*" component={NotFoundView} />
   </Route>
 );

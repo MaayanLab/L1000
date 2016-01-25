@@ -1,4 +1,34 @@
+@import '../../styles/variables';
+@import '~bootstrap/scss/variables';
+@import '~bootstrap/scss/mixins/breakpoints';
+
 .experiment-wrapper {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
+  margin-top: 40px;
+}
+
+.experiment {
+  display: flex;
+  margin-bottom: 1rem;
+}
+
+.experiment-info {
+  padding: 10px 15px 10px 10px;
+
+  h3 {
+    margin: 0;
+  }
+
+  h5 {
+    font-style: italic;
+    margin-top: 0;
+  }
+
+  @include media-breakpoint-up(xl) {
+    p {
+      width: 300px;
+    }
+  }
 }

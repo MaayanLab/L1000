@@ -1,6 +1,6 @@
 @import '../../styles/variables';
 
-.nav-outer {
+.main-nav {
   border: 1px solid transparent;
   border-bottom-color: $dark-gray;
   margin-bottom: 20px;
@@ -10,13 +10,6 @@
   position: relative;
 }
 
-.nav-inner {
-
-  ul {
-    margin: 0;
-  }
-}
-
 .brand {
   float: left;
   font-size: 18px;
@@ -24,6 +17,18 @@
 }
 
 .right-nav {
-  float: right;
-  list-style: none;
+
+  ul > li > a {
+    padding-bottom: 0;
+    padding-top: 0;
+
+    &:hover {
+      text-decoration: underline;
+    }
+
+    &:hover,
+    &:focus {
+      background-color: $white;
+    }
+  }
 }

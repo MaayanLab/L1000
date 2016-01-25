@@ -49,7 +49,7 @@ const config = {
     'react-redux',
     'react-router',
     'redux',
-    'redux-actions',
+    'classnames',
     'redux-simple-router',
   ],
 

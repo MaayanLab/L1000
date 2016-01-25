@@ -1,7 +1,7 @@
 import monk from 'monk';
 import _debug from 'debug';
-import config from '../../config';
-import wrap from 'co-monk';
+import config from '../serverConf';
+import wrap from 'monkify';
 import filter from 'lodash/collection/filter';
 
 const debug = _debug('app:server:controllers:experiment');
@@ -15,6 +15,7 @@ Compounds.insert({
   name: 'Michael McDermott',
   address: 'One Park Avenue, New York, NY',
   compound: 'Compound One',
+  status: 'reserved',
 }, (coErr, compoundOne) => {
   Experiments.insert({
     title: 'Experiment 1',
@@ -33,8 +34,8 @@ Compounds.insert({
 });
 
 Experiments.index('title', { unique: true });
-Compounds = wrap(db.get('compounds'));
-Experiments = wrap(db.get('experiments'));
+Compounds = wrap(Compounds);
+Experiments = wrap(Experiments);
 
 exports.findAll = function *findAll(next) {
   if (this.method !== 'GET') {
@@ -125,19 +126,7 @@ exports.addCompound = function *addCompound(id, next) {
     this.throw(400, 'Compound request invalid. Please check your request body.');
   }
   const compounds = experiment.compounds;
-  const index = this.request.query.index;
-  // If index specified, add it there, otherwise, add to first available spot
-  if (this.request.query && this.request.query.index && this.request.query.index < numCompounds) {
-    compounds[index] = newCompound;
-  } else {
-    // Add newCompound to first available spot in compounds array
-    for (let i = 0; i < numCompounds; i++) {
-      if (!compounds[i]) {
-        compounds[i] = newCompound;
-        break;
-      }
-    }
-  }
+  compounds.push(newCompound);
   yield Experiments.findAndModify({ _id: id }, { $set: { compounds } });
   this.body = yield Experiments.findById(id);
 };

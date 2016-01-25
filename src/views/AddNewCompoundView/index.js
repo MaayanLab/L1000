@@ -1,11 +1,10 @@
 import React, { Component, PropTypes } from 'react';
-// import { pushPath } from 'redux-simple-router';
 import { connect } from 'react-redux';
 import { pushPath } from 'redux-simple-router';
 import { initialize } from 'redux-form';
-import { addCompound, loadExperiments } from '../../actions';
-import AddCompoundForm from '../../containers/AddCompoundForm';
-import Experiment from '../../components/Experiment';
+import { addCompound, loadExperiments } from 'actions';
+import AddCompoundForm from 'containers/AddCompoundForm';
+import Experiment from 'components/Experiment';
 import styles from './AddNewCompoundView.scss';
 
 const mapStateToProps = (state) => ({
@@ -18,42 +17,34 @@ export class AddNewCompound extends Component {
 
   _handleSubmit = (formData) => {
     const { experimentId } = this.props.params;
-    const { index } = this.props.location.query;
-    console.log(formData);
-    this.props.addCompound(formData, experimentId, index);
+    this.props.addCompound(formData, experimentId);
     // Re-initialize AddCompound Form
-    this.props.initialize('AddCompound');
-    // TODO: Eventually go to an experiment or  compound specific page
-    // this.props.pushPath(`/experiments/${experimentId}/compounds/${index}`);
+    // TODO: Eventually go to an experiment or compound specific page
+    // this.props.pushPath(`/experiments/${experimentId}/compounds/${compoundId}`);
     this.props.pushPath('/');
-  }
-
-  _handleSelectTile = (experimentId, compoundIndex) => {
-    this.props.pushPath(`/experiments/${experimentId}/compounds/create?index=${compoundIndex}`);
   }
 
   render() {
     const { entities } = this.props;
     const experiment = entities.experiments[this.props.params.experimentId];
     return (
-      <div className="wrapper">
-        <div className="container">
-          <h1 className="text-center">Add a Compound</h1>
-          <div className={styles['form-wrapper']}>
-            <AddCompoundForm onSubmit={this._handleSubmit} />
-          </div>
+      <div className="container">
+        <h1 className="text-center">
+          Reserve a Compound in <strong>{experiment.title}</strong>
+        </h1>
+        <div className={styles.wrapper}>
           <div className={styles.experiment}>
             {
               !!entities && !!experiment ?
               <Experiment
+                width={300}
                 experiment={experiment}
                 compounds={entities.compounds}
-                selectedIndex={parseInt(this.props.location.query.index, 10)}
-                onSelectTile={this._handleSelectTile}
               />
               : null
             }
           </div>
+          <AddCompoundForm onSubmit={this._handleSubmit} />
         </div>
       </div>
     );

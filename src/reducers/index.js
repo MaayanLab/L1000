@@ -2,6 +2,7 @@ import { combineReducers } from 'redux';
 import { routeReducer as router } from 'redux-simple-router';
 import { reducer as formReducer } from 'redux-form';
 import merge from 'lodash/object/merge';
+import auth from './auth';
 import * as ActionTypes from '../actions';
 
 // Updates an entity cache in response to any action with response.entities.
@@ -29,6 +30,7 @@ export default combineReducers({
   entities,
   errorMessage,
   router,
+  auth,
   form: formReducer.plugin({
     AddCompound: (state, action) => {
       switch (action.type) {

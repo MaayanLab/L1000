@@ -1,5 +1,4 @@
 @import 'variables';
-@import 'vendor/normalize';
 
 html {
   box-sizing: border-box;
@@ -24,9 +23,8 @@ body {
 
 footer {
   background-color: $light-gray;
-  margin-top: 40px;
   height: $footer-height - 40px;
-  // margin-top: 40px;
+  margin-top: 40px;
   position: relative;
   width: 100%;
 }

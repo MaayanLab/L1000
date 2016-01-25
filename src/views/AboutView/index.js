@@ -7,16 +7,16 @@ export class AboutView extends Component {
   render() {
     return (
       <div className={cn(['container', styles.about])}>
-        <h1 className="text-center">About L1000</h1>
-        <h5>
+        <h1 className="text-xs-center">About L1000</h1>
+        <h6>
           <em>
             The information below was taken from <a href="http://www.lincscloud.org/l1000/">
             http://www.lincscloud.org/l1000/</a>
           </em>
-        </h5>
+        </h6>
         <a href="http://amp.pharm.mssm.edu/static/L1000/L1000_data_flow.png">
           <img
-            className="img-responsive"
+            className="img-fluid"
             src="http://amp.pharm.mssm.edu/static/L1000/L1000_data_flow.png"
           />
         </a>

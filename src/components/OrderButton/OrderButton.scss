@@ -1,0 +1,23 @@
+@import '../../styles/variables';
+
+%order-btn {
+  background-color: $orange;
+  color: $white;
+
+  &:hover,
+  &:active,
+  &:focus,
+  &:visited {
+    background-color: darken($orange, 5);
+    color: $white;
+  }
+}
+
+.order-btn {
+  @extend %order-btn;
+}
+
+.order-btn-disabled {
+  @extend %order-btn;
+  background-color: darken($orange, 5);
+}

@@ -1,6 +1,96 @@
 /* @flow */
 import { CALL_API, Schemas } from '../middleware/api';
+import { pushPath } from 'redux-simple-router';
+import jwtDecode from 'jwt-decode';
 // import isEqual from 'lodash/lang/isEqual';
+
+export const LOGIN_USER_REQUEST = 'LOGIN_USER_REQUEST';
+export const LOGIN_USER_SUCCESS = 'LOGIN_USER_SUCCESS';
+export const LOGIN_USER_FAILURE = 'LOGIN_USER_FAILURE';
+
+export function loginUserSuccess(token) {
+  localStorage.setItem('token', token);
+  return {
+    type: LOGIN_USER_SUCCESS,
+    payload: {
+      token,
+      user: jwtDecode(token),
+    },
+  };
+}
+
+export function loginUserFailure(error) {
+  localStorage.removeItem('token');
+  return {
+    type: LOGIN_USER_FAILURE,
+    payload: {
+      status: error.response.status,
+      statusText: error.response.statusText,
+    },
+  };
+}
+
+export function loginUserRequest() {
+  return {
+    type: LOGIN_USER_REQUEST,
+  };
+}
+
+export const LOGOUT_USER = 'LOGOUT_USER';
+
+export function logout() {
+  localStorage.removeItem('token');
+  return {
+    type: LOGOUT_USER,
+  };
+}
+
+export function logoutAndRedirect() {
+  return (dispatch) => {
+    dispatch(logout());
+    dispatch(pushPath(null, '/login'));
+  };
+}
+
+export function loginUser(email, password, redirect = '/') {
+  return (dispatch) => {
+    dispatch(loginUserRequest());
+    return fetch('http://localhost:3000/auth/getToken/', {
+      method: 'post',
+      credentials: 'include',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email, password }),
+    })
+    .then(response => {
+      if (response.status >= 200 && response.status < 300) {
+        return response;
+      }
+      const error = new Error(response.statusText);
+      error.response = response;
+      throw error;
+    })
+    .then(response => response.json())
+    .then(response => {
+      try {
+        dispatch(loginUserSuccess(response.token));
+        dispatch(pushPath(null, redirect));
+      } catch (e) {
+        dispatch(loginUserFailure({
+          response: {
+            status: 403,
+            statusText: 'Invalid token',
+          },
+        }));
+      }
+    })
+    .catch(error => {
+      dispatch(loginUserFailure(error));
+    });
+  };
+}
 
 export const EXPERIMENT_REQUEST = 'EXPERIMENT_REQUEST';
 export const EXPERIMENT_SUCCESS = 'EXPERIMENT_SUCCESS';
@@ -54,11 +144,11 @@ export const ADD_COMPOUND_SUCCESS = 'ADD_COMPOUND_SUCCESS';
 export const ADD_COMPOUND_FAILURE = 'ADD_COMPOUND_FAILURE';
 
 
-function addCompoundRequest(compound, experimentId, index) {
+function addCompoundRequest(compound, experimentId) {
   return {
     [CALL_API]: {
       types: [ADD_COMPOUND_REQUEST, ADD_COMPOUND_SUCCESS, ADD_COMPOUND_FAILURE],
-      endpoint: `experiments/${experimentId}/compounds/create?index=${index}`,
+      endpoint: `experiments/${experimentId}/compounds/add`,
       schema: Schemas.EXPERIMENT,
       body: compound,
     },
@@ -67,13 +157,13 @@ function addCompoundRequest(compound, experimentId, index) {
 
 // Fetches a single experiment from API.
 // Relies on the custom API middleware defined in ../middleware/api.js.
-export function addCompound(compound, experimentId, index) {
+export function addCompound(compound, experimentId) {
   return (dispatch) => {
     // const compoundFromState = getState().entities.compounds[compound._id];
     // if (compoundFromState && isEqual(compound, compoundFromState)) {
     //   return null;
     // }
-    return dispatch(addCompoundRequest(compound, experimentId, index));
+    return dispatch(addCompoundRequest(compound, experimentId));
   };
 }
 
