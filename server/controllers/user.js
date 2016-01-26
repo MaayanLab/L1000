@@ -46,44 +46,45 @@ function comparePassword(hashedPass, passToCompare): Promise {
   });
 }
 
-export async function register(next) {
-  if (this.method !== 'POST') {
-    return await next;
-  }
-  const userObj = this.request.body;
-  const hashedPass = await hashPassword(userObj.password);
-  userObj.password = hashedPass;
-
-  const newUser = await Users.insert(userObj);
-  if (!newUser) {
-    this.throw(400, 'Could not sign up user. Please check your request body.');
-  }
-  const userWOPassword = omit(newUser, 'password');
-  this.body = {
-    token: createToken(userWOPassword),
-    user: userWOPassword,
-  };
-}
-
-export async function login(next) {
-  if (this.method !== 'POST') {
-    return await next;
-  }
-  const { email, password } = this.request.body;
-  let user;
-  try {
-    user = await Users.findOne({ email });
-    const passwordMatches = await comparePassword(user.password, password);
-    if (!passwordMatches) {
-      this.throw(401, 'Username/password incorrect. Please try again.');
+export default {
+  register: async (ctx) => {
+    if (ctx.method !== 'POST') {
+      return;
     }
-  } catch (e) {
-    debug(e);
-    this.throw(401, 'Username/password incorrect. Please try again.');
-  }
-  const userWOPassword = omit(user, 'password');
-  this.body = {
-    token: createToken(userWOPassword),
-    user: userWOPassword,
-  };
-}
+    const userObj = ctx.request.body;
+    const hashedPass = await hashPassword(userObj.password);
+    userObj.password = hashedPass;
+
+    const newUser = await Users.insert(userObj);
+    if (!newUser) {
+      ctx.throw(400, 'Could not sign up user. Please check your request body.');
+    }
+    const userWOPassword = omit(newUser, 'password');
+    ctx.body = {
+      token: createToken(userWOPassword),
+      user: userWOPassword,
+    };
+  },
+  login: async (ctx) => {
+    if (ctx.method !== 'POST') {
+      return;
+    }
+    const { email, password } = ctx.request.body;
+    let user;
+    try {
+      user = await Users.findOne({ email });
+      const passwordMatches = await comparePassword(user.password, password);
+      if (!passwordMatches) {
+        ctx.throw(401, 'Username/password incorrect. Please try again.');
+      }
+    } catch (e) {
+      debug(e);
+      ctx.throw(401, 'Username/password incorrect. Please try again.');
+    }
+    const userWOPassword = omit(user, 'password');
+    ctx.body = {
+      token: createToken(userWOPassword),
+      user: userWOPassword,
+    };
+  },
+};

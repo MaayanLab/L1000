@@ -1,8 +1,8 @@
 import { applyMiddleware, compose, createStore } from 'redux';
 import { syncHistory } from 'react-router-redux';
 import thunk from 'redux-thunk';
-import api from '../middleware/api';
-import rootReducer from '../reducers';
+import api from 'middleware/api';
+import rootReducer from 'reducers';
 
 function withDevTools(middleware) {
   const devTools = window.devToolsExtension

@@ -84,6 +84,7 @@ config.globals = {
   },
   NODE_ENV     : config.env,
   __DEV__      : config.env === 'development',
+  __TEST__      : config.env === 'test',
   __PROD__     : config.env === 'production',
   __DEBUG__    : config.env === 'development' && !argv.no_debug,
   __DEBUG_NEW_WINDOW__ : !!argv.nw,

@@ -40,7 +40,7 @@ const karmaConfig = {
   },
 };
 
-if (config.coverage_enabled) {
+if (config.coverageEnabled) {
   karmaConfig.reporters.push('coverage');
   karmaConfig.webpack.module.preLoaders = [{
     test: /\.(js|jsx)$/,

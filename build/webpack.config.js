@@ -113,7 +113,7 @@ webpackConfig.module.loaders = [{
     plugins: ['transform-runtime'],
     presets: __DEV__
       ? ['es2015', 'react', 'stage-0', 'react-hmre']
-      : ['es2015', 'react', 'stage-0', 'transform-flow-strip-types'],
+      : ['es2015', 'react', 'stage-0'],
   },
 },
 {
