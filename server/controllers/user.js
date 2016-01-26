@@ -3,25 +3,22 @@ import _debug from 'debug';
 import bcrypt from 'bcrypt';
 import config from '../serverConf';
 import { sign } from 'koa-jwt';
-import wrap from 'monkify';
-// import filter from 'lodash/collection/filter';
 import omit from 'lodash/object/omit';
 
 const debug = _debug('app:server:controllers:user');
 const db = monk(config.dbUrl);
-let Users = db.get('users');
-
-Users = wrap(db.get('users'));
+const Users = db.get('users');
+Users.index('email', { unique: true });
 const SALT_WORK_FACTOR = 10;
 
-function createToken(user) {
+function createToken(user): String {
   return sign(user, config.secret, {
     expiresIn: 2 * 60 * 60, // 2 days
     issuer: 'http://amp.pharm.mssm.edu/L1000/',
   });
 }
 
-function hashPassword(password) {
+function hashPassword(password): Promise {
   return new Promise((resolve, reject) => {
     bcrypt.genSalt(SALT_WORK_FACTOR, (err, salt) => {
       if (err) {
@@ -38,7 +35,7 @@ function hashPassword(password) {
   });
 }
 
-function comparePassword(hashedPass, passToCompare) {
+function comparePassword(hashedPass, passToCompare): Promise {
   return new Promise((resolve, reject) => {
     bcrypt.compare(passToCompare, hashedPass, (err, isMatch) => {
       if (err) {
@@ -49,30 +46,34 @@ function comparePassword(hashedPass, passToCompare) {
   });
 }
 
-exports.register = function *register(next) {
+export async function register(next) {
   if (this.method !== 'POST') {
-    return yield next;
+    return await next;
   }
   const userObj = this.request.body;
-  const hashedPass = yield hashPassword(userObj.password);
+  const hashedPass = await hashPassword(userObj.password);
   userObj.password = hashedPass;
 
-  const newUser = yield Users.insert(userObj);
+  const newUser = await Users.insert(userObj);
   if (!newUser) {
     this.throw(400, 'Could not sign up user. Please check your request body.');
   }
-  this.body = omit(newUser, 'password');
-};
+  const userWOPassword = omit(newUser, 'password');
+  this.body = {
+    token: createToken(userWOPassword),
+    user: userWOPassword,
+  };
+}
 
-exports.login = function *login(next) {
+export async function login(next) {
   if (this.method !== 'POST') {
-    return yield next;
+    return await next;
   }
   const { email, password } = this.request.body;
   let user;
   try {
-    user = yield Users.findOne({ email });
-    const passwordMatches = yield comparePassword(user.password, password);
+    user = await Users.findOne({ email });
+    const passwordMatches = await comparePassword(user.password, password);
     if (!passwordMatches) {
       this.throw(401, 'Username/password incorrect. Please try again.');
     }
@@ -85,4 +86,4 @@ exports.login = function *login(next) {
     token: createToken(userWOPassword),
     user: userWOPassword,
   };
-};
+}

@@ -1,15 +1,14 @@
+// Based on: https://github.com/dayAlone/koa-webpack-hot-middleware/blob/master/index.js
 export default function applyExpressMiddleware(fn, req, res) {
   const originalEnd = res.end;
 
-  return function doneFunc(done) {
-    // Need to reassign to res here
-    /* eslint no-param-reassign: 0 */
+  return new Promise((resolve) => {
     res.end = function resEnd() {
       originalEnd.apply(this, arguments);
-      done(null, 0);
+      resolve(false);
     };
     fn(req, res, function cb() {
-      done(null, 1);
+      resolve(true);
     });
-  };
+  });
 }

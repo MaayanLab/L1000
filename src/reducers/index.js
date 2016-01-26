@@ -1,5 +1,5 @@
 import { combineReducers } from 'redux';
-import { routeReducer as router } from 'redux-simple-router';
+import { routeReducer as router } from 'react-router-redux';
 import { reducer as formReducer } from 'redux-form';
 import merge from 'lodash/object/merge';
 import auth from './auth';
@@ -32,6 +32,20 @@ export default combineReducers({
   router,
   auth,
   form: formReducer.plugin({
+    Login: (state, action) => {
+      switch (action.type) {
+        case ActionTypes.LOGIN_USER_SUCCESS:
+          return undefined;
+        case ActionTypes.LOGIN_USER_FAILURE:
+          return {
+            ...state,
+            errorStatus: action.payload.status,
+            errorText: action.payload.statusText,
+          };
+        default:
+          return state;
+      }
+    },
     AddCompound: (state, action) => {
       switch (action.type) {
         case ActionTypes.ADD_COMPOUND_SUCCESS:

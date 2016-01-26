@@ -19,21 +19,18 @@ export default function (compiler, publicPath) {
     stats: config.compilerStats,
   });
 
-  return function *run(next) {
-    // eslint doesn't think so, but ctx, req, and runNext are modified later
+  return async function koaWebpackDevMiddleware(ctx, next) {
+    // eslint doesn't think so, but hasNext is modified later
     /* eslint prefer-const: 0 */
-    let ctx = this;
-    let req = this.req;
-
-    let runNext = yield applyExpressMiddleware(middleware, req, {
+    let hasNext = await applyExpressMiddleware(middleware, ctx.req, {
       end: (content) => ctx.body = content,
       setHeader: function setHeader() {
         ctx.set.apply(ctx, arguments);
       },
     });
 
-    if (runNext) {
-      yield* next;
+    if (hasNext) {
+      await next();
     }
   };
 }

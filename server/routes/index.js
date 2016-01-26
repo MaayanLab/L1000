@@ -1,8 +1,9 @@
 import _debug from 'debug';
 import route from 'koa-route';
 import jwt from 'koa-jwt';
-import experiments from '../controllers/experiment';
-import users from '../controllers/user';
+import convert from 'koa-convert';
+import * as experimentMethods from '../controllers/experiment';
+import { register, login } from '../controllers/user';
 import config from '../serverConf';
 
 const debug = _debug('app:server:routes');
@@ -14,18 +15,22 @@ export default function routes(app) {
   // Unprotected Routes
 
   // Users
-  app.use(route.post(`${BASE}/register`, users.register));
-  app.use(route.post(`${BASE}/login`, users.login));
+  app.use(route.post(`${BASE}/register`, register));
+  app.use(route.post(`${BASE}/login`, login));
 
   // Experiments
-  app.use(route.get(`${BASE}/experiments`, experiments.findAll));
-  app.use(route.get(`${BASE}/experiments/:id`, experiments.findById));
-  app.use(route.get(`${BASE}/experiments/completed`, experiments.findCompleted));
-  app.use(route.get(`${BASE}/experiments/available`, experiments.findWithAvailableSpots));
+  app.use(route.get(`${BASE}/experiments`, experimentMethods.findAll));
+  app.use(route.get(`${BASE}/experiments/:id`, experimentMethods.findById));
+  app.use(route.get(`${BASE}/experiments/completed`, experimentMethods.findCompleted));
+  app.use(route.get(`${BASE}/experiments/available`, experimentMethods.findWithAvailableSpots));
 
   // Protected Routes
-  app.use(jwt({ secret: config.secret, passthrough: true }));
-  app.use(route.post(`${BASE}/experiments/add`, experiments.addExperiment));
-  app.use(route.del(`${BASE}/experiments/:id/remove`, experiments.removeExperiment));
-  app.use(route.post(`${BASE}/experiments/:id/compounds/add`, experiments.addCompound));
+
+  // Check for a valid JWT in header
+  app.use(convert(jwt({ secret: config.secret, passthrough: true })));
+
+  // Experiments
+  app.use(route.post(`${BASE}/experiments/add`, experimentMethods.addExperiment));
+  app.use(route.del(`${BASE}/experiments/:id/remove`, experimentMethods.removeExperiment));
+  app.use(route.post(`${BASE}/experiments/:id/compounds/add`, experimentMethods.addCompound));
 }

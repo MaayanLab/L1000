@@ -10,9 +10,5 @@
     "__DEBUG__"    : false,
     "__DEBUG_NEW_WINDOW__" : false,
     "__BASENAME__" : false,
-  },
-  "rules": {
-    "generator-star-spacing": 1,
-    "require-yield": 1,
   }
 }

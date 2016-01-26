@@ -1,17 +1,16 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { createHistory, useBasename } from 'history';
-import { syncReduxAndRouter } from 'redux-simple-router';
+import { createHistory } from 'history';
+import { useRouterHistory } from 'react-router';
 import routes from './routes';
 import Root from './containers/Root';
 import configureStore from './store/configureStore';
 
-const history = useBasename(createHistory)({
-  basename: '/L1000',
-});
-const store = configureStore(window.__INITIAL_STATE__);
+const historyConfig = { basename: '/L1000' };
+const history = useRouterHistory(createHistory)(historyConfig);
 
-syncReduxAndRouter(history, store, (state) => state.router);
+const initialState = window.__INITIAL_STATE__;
+const store = configureStore({ initialState, history });
 
 // Render the React application to the DOM
 ReactDOM.render(

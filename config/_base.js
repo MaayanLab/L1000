@@ -5,7 +5,7 @@ import { argv } from 'yargs';
 
 const debug = _debug('app:config:_base');
 const config = {
-  env : process.env.NODE_ENV,
+  env : process.env.NODE_ENV || 'development',
 
   // ----------------------------------
   // Project Structure
@@ -30,15 +30,16 @@ const config = {
   // ----------------------------------
   // Compiler Configuration
   // ----------------------------------
-  compilerCssModules     : true,
-  compilerEnableHmr      : false,
-  compilerGlobals         : {},
-  compilerSourceMaps     : true,
-  compilerHashType       : 'hash',
+  compilerCssModules    : true,
+  compilerDevTool       : 'source-map',
+  compilerEnableHmr     : false,
+  compilerGlobals       : {},
+  compilerSourceMaps    : true,
+  compilerHashType      : 'hash',
   compilerFailOnWarning : false,
-  compilerQuiet           : false,
-  compilerPublicPath     : '',
-  compilerStats           : {
+  compilerQuiet         : false,
+  compilerPublicPath    : '',
+  compilerStats         : {
     chunks : false,
     chunkModules : false,
     colors : true,
@@ -48,9 +49,11 @@ const config = {
     'react',
     'react-redux',
     'react-router',
+    'react-router-redux',
     'redux',
     'classnames',
-    'redux-simple-router',
+    'redux-form',
+    'jwt-decode',
   ],
 
   // ----------------------------------

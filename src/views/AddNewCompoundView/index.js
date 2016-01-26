@@ -1,7 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
-import { pushPath } from 'redux-simple-router';
-import { initialize } from 'redux-form';
+import { routeActions } from 'react-router-redux';
 import { addCompound, loadExperiments } from 'actions';
 import AddCompoundForm from 'containers/AddCompoundForm';
 import Experiment from 'components/Experiment';
@@ -10,7 +9,7 @@ import styles from './AddNewCompoundView.scss';
 const mapStateToProps = (state) => ({
   entities: state.entities,
 });
-export class AddNewCompound extends Component {
+export class AddNewCompoundView extends Component {
   componentWillMount() {
     this.props.loadExperiments();
   }
@@ -20,16 +19,16 @@ export class AddNewCompound extends Component {
     this.props.addCompound(formData, experimentId);
     // Re-initialize AddCompound Form
     // TODO: Eventually go to an experiment or compound specific page
-    // this.props.pushPath(`/experiments/${experimentId}/compounds/${compoundId}`);
-    this.props.pushPath('/');
-  }
+    // this.props.push(`/experiments/${experimentId}/compounds/${compoundId}`);
+    this.props.push('/');
+  };
 
   render() {
     const { entities } = this.props;
     const experiment = entities.experiments[this.props.params.experimentId];
     return (
       <div className="container">
-        <h1 className="text-center">
+        <h1 className="text-xs-center">
           Reserve a Compound in <strong>{experiment.title}</strong>
         </h1>
         <div className={styles.wrapper}>
@@ -51,19 +50,17 @@ export class AddNewCompound extends Component {
   }
 }
 
-AddNewCompound.propTypes = {
+AddNewCompoundView.propTypes = {
   params: PropTypes.object.isRequired,
   entities: PropTypes.object.isRequired,
   location: PropTypes.object.isRequired,
-  pushPath: PropTypes.func.isRequired,
-  initialize: PropTypes.func.isRequired,
+  push: PropTypes.func.isRequired,
   addCompound: PropTypes.func.isRequired,
   loadExperiments: PropTypes.func.isRequired,
 };
 
 export default connect(mapStateToProps, {
-  pushPath,
-  initialize,
   addCompound,
   loadExperiments,
-})(AddNewCompound);
+  ...routeActions,
+})(AddNewCompoundView);

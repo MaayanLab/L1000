@@ -5,7 +5,8 @@ import styles from './OrderButton.scss';
 class OrderButton extends Component {
   _handleClick = () => {
     this.props.onClick(this.props.experimentId);
-  }
+  };
+
   render() {
     // Enable button by default. If spots available is undefined, return enabled button.
     if (this.props.spotsAvailable || this.props.spotsAvailable === undefined) {

@@ -1,7 +1,5 @@
 import React, { Component, PropTypes } from 'react';
 import { reduxForm } from 'redux-form';
-import cn from 'classnames';
-import styles from './RegisterForm.scss';
 
 const validate = values => {
   const errors = {
@@ -10,7 +8,7 @@ const validate = values => {
     phoneNumber: values.phoneNumber ? undefined : 'Required',
   };
 
-  if (!values.password) {
+  if (!values.email) {
     errors.email = 'Required';
   } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(values.email)) {
     errors.email = 'Invalid email address';
@@ -50,8 +48,16 @@ export class RegisterForm extends Component {
     } = this.props;
     return (
       <form onSubmit={handleSubmit}>
+        <p className="text-xs-center"><em>All Fields are required.</em></p>
         <fieldset className="form-group">
-          <label htmlFor="email">Email address</label>
+          <div className="label-group">
+            <label htmlFor="email">Email address</label>
+            {
+              email.touched &&
+              email.error &&
+              <span className="error">*{email.error}</span>
+            }
+          </div>
           <input
             type="email"
             id="email"
@@ -59,10 +65,16 @@ export class RegisterForm extends Component {
             placeholder="Enter email"
             {...email}
           />
-          { email.touched && email.error && <div>{email.error}</div> }
         </fieldset>
         <fieldset className="form-group">
-          <label htmlFor="password">Password</label>
+          <div className="label-group">
+            <label htmlFor="password">Password</label>
+            {
+              password.touched &&
+              password.error &&
+              <span className="error">*{password.error}</span>
+            }
+          </div>
           <input
             id="password"
             type="password"
@@ -72,12 +84,18 @@ export class RegisterForm extends Component {
           />
           <small className="text-muted">
             Password must be greater than 6 characters, less than 50, contain at least 1 letter
-            and number, and it may conain special characters !@#$%^&*()_+
+            and number, and it may contain special characters !@#$%^&*()_+
           </small>
-          { password.touched && password.error && <div>{password.error}</div> }
         </fieldset>
         <fieldset className="form-group">
-          <label htmlFor="name">Name</label>
+          <div className="label-group">
+            <label htmlFor="name">Name</label>
+            {
+              name.touched &&
+              name.error &&
+              <span className="error">*{name.error}</span>
+            }
+          </div>
           <input
             id="name"
             type="name"
@@ -85,10 +103,16 @@ export class RegisterForm extends Component {
             placeholder="John Doe"
             {...name}
           />
-          { name.touched && name.error && <div>{name.error}</div> }
         </fieldset>
         <fieldset className="form-group">
-          <label htmlFor="address">Address</label>
+          <div className="label-group">
+            <label htmlFor="address">Address</label>
+            {
+              address.touched &&
+              address.error &&
+              <span className="error">*{address.error}</span>
+            }
+          </div>
           <input
             id="address"
             type="address"
@@ -96,10 +120,16 @@ export class RegisterForm extends Component {
             placeholder="415 Main Street, Cambridge, MA 02142"
             {...address}
           />
-          { address.touched && address.error && <div>{address.error}</div> }
         </fieldset>
         <fieldset className="form-group">
-          <label htmlFor="phoneNumber">Phone Number</label>
+          <div className="label-group">
+            <label htmlFor="phoneNumber">Phone Number</label>
+            {
+              phoneNumber.touched &&
+              phoneNumber.error &&
+              <span className="error">*{phoneNumber.error}</span>
+            }
+          </div>
           <input
             id="phoneNumber"
             type="phoneNumber"
@@ -107,9 +137,8 @@ export class RegisterForm extends Component {
             placeholder="555-867-5309"
             {...phoneNumber}
           />
-          { phoneNumber.touched && phoneNumber.error && <div>{phoneNumber.error}</div> }
         </fieldset>
-        <div className={styles['form-buttons']}>
+        <div className="form-buttons">
           <button
             className="btn btn-secondary"
             disabled={submitting}
@@ -118,7 +147,7 @@ export class RegisterForm extends Component {
             Reset
           </button>
           <button
-            className={cn(['btn', styles['submit-btn']])}
+            className="btn submit-btn"
             disabled={submitting}
             onClick={handleSubmit}
           >

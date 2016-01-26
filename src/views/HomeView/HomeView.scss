@@ -26,6 +26,10 @@
     margin-top: 0;
   }
 
+  p {
+    line-height: 1.2;
+  }
+
   @include media-breakpoint-up(xl) {
     p {
       width: 300px;

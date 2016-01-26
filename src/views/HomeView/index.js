@@ -1,7 +1,7 @@
 import React, { Component, PropTypes } from 'react';
-import { pushPath } from 'redux-simple-router';
+import { routeActions } from 'react-router-redux';
 import { connect } from 'react-redux';
-import { loadExperiments } from 'actions';
+import { loginUser, loadExperiments } from 'actions';
 import Experiment from 'components/Experiment';
 import OrderButton from 'components/OrderButton';
 import styles from './HomeView.scss';
@@ -15,8 +15,8 @@ export class HomeView extends Component {
   }
 
   _handleButtonClick = (experimentId) => {
-    this.props.pushPath(`/experiments/${experimentId}/compounds/add`);
-  }
+    this.props.push(`/experiments/${experimentId}/compounds/add`);
+  };
 
   render() {
     const { entities } = this.props;
@@ -62,11 +62,12 @@ export class HomeView extends Component {
 
 HomeView.propTypes = {
   entities: PropTypes.object,
-  pushPath: PropTypes.func.isRequired,
+  push: PropTypes.func.isRequired,
   loadExperiments: PropTypes.func.isRequired,
 };
 
 export default connect(mapStateToProps, {
-  pushPath,
+  loginUser,
   loadExperiments,
+  ...routeActions,
 })(HomeView);

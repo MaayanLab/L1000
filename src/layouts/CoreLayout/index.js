@@ -1,18 +1,9 @@
 import React from 'react';
-import Navigation from '../../components/Navigation';
+import Navigation from 'containers/Navigation';
 // Import default styles
-import '../../styles/core.scss';
+import 'styles/core.scss';
 import coreStyles from './CoreLayout.scss';
 
-// Note: Stateless/function components *will not* hot reload!
-// react-transform *only* works on component classes.
-//
-// Since layouts rarely change, they are a good place to
-// leverage React's new Statelesss Functions:
-// https://facebook.github.io/react/docs/reusable-components.html#stateless-functions
-//
-// CoreLayout is a pure function of it's props, so we can
-// define it with a plain javascript function...
 function CoreLayout({ children }) {
   return (
     <div className={coreStyles.wrapper}>

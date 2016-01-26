@@ -8,13 +8,14 @@ export default function (compiler, opts) {
   debug('Enable Webpack Hot Module Replacement (HMR).');
 
   const middleware = webpackHotMiddleware(compiler, opts);
-  return function *run(next) {
-    // nextStep is modified later
-    /* eslint prefer-const: 0 */
-    let nextStep = yield applyExpressMiddleware(middleware, this.req, this.res);
 
-    if (nextStep && next) {
-      yield* next;
+  return async function koaWebpackHMR(ctx, next) {
+    // hasNext is modified later
+    /* eslint prefer-const: 0 */
+    let hasNext = await applyExpressMiddleware(middleware, ctx.req, ctx.res);
+
+    if (hasNext && next) {
+      await next();
     }
   };
 }

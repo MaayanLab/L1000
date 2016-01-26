@@ -1,13 +1,12 @@
 import monk from 'monk';
 import _debug from 'debug';
 import config from '../serverConf';
-import wrap from 'monkify';
 import filter from 'lodash/collection/filter';
 
 const debug = _debug('app:server:controllers:experiment');
 const db = monk(config.dbUrl);
-let Compounds = db.get('compounds');
-let Experiments = db.get('experiments');
+const Compounds = db.get('compounds');
+const Experiments = db.get('experiments');
 Compounds.drop();
 Experiments.drop();
 
@@ -34,38 +33,38 @@ Compounds.insert({
 });
 
 Experiments.index('title', { unique: true });
-Compounds = wrap(Compounds);
-Experiments = wrap(Experiments);
+// Compounds = wrap(Compounds);
+// Experiments = wrap(Experiments);
 
-exports.findAll = function *findAll(next) {
+export async function findAll(next) {
   if (this.method !== 'GET') {
-    return yield next;
+    return await next;
   }
-  const experiments = yield Experiments.find({});
+  const experiments = await Experiments.find({});
   const populatedExperiments = [];
   let index = 0;
   while (index < experiments.length) {
     const experiment = experiments[index];
     // Compounds are currently an array of ids. Find them and replace them with actual compounds
-    experiment.compounds = yield Compounds.find({ _id: { '$in': experiment.compounds } });
+    experiment.compounds = await Compounds.find({ _id: { '$in': experiment.compounds } });
     populatedExperiments.push(experiment);
     index++;
   }
   this.body = populatedExperiments;
-};
+}
 
-exports.findById = function *findById(id, next) {
+export async function findById(id, next) {
   if (this.method !== 'GET') {
-    return yield next;
+    return await next;
   }
-  this.body = yield Experiments.findById(id);
-};
+  this.body = await Experiments.findById(id);
+}
 
-exports.findWithAvailableSpots = function *findWithAvailableSpots(next) {
+export async function findWithAvailableSpots(next) {
   if (this.method !== 'GET') {
-    return yield next;
+    return await next;
   }
-  const experiments = yield Experiments.find({});
+  const experiments = await Experiments.find({});
   // Remove experiments that do not have compound spots available
   // Single Dose experiments contain 360 available spots
   // Dose Response experiments contain 56 available spots
@@ -77,13 +76,13 @@ exports.findWithAvailableSpots = function *findWithAvailableSpots(next) {
     }
     debug(`Experiment with title: ${experiment.title} does not have a type!`);
   });
-};
+}
 
-exports.findCompleted = function *findCompleted(next) {
+export async function findCompleted(next) {
   if (this.method !== 'GET') {
-    return yield next;
+    return await next;
   }
-  const experiments = yield Experiments.find({});
+  const experiments = await Experiments.find({});
   // Remove experiments that have compound spots available
   // Single Dose experiments contain 360 available spots
   // Dose Response experiments contain 56 available spots
@@ -95,24 +94,24 @@ exports.findCompleted = function *findCompleted(next) {
     }
     debug(`Experiment with title: ${experiment.title} does not have a type!`);
   });
-};
+}
 
-exports.addExperiment = function *addExperiment(next) {
+export async function addExperiment(next) {
   if (this.method !== 'POST') {
-    return yield next;
+    return await next;
   }
-  const newExperiment = yield Experiments.insert(this.request.body);
+  const newExperiment = await Experiments.insert(this.request.body);
   if (!newExperiment) {
     this.throw(400, 'Experiment could not be created.');
   }
   this.body = newExperiment;
-};
+}
 
-exports.addCompound = function *addCompound(id, next) {
+export async function addCompound(id, next) {
   if (this.method !== 'POST') {
-    return yield next;
+    return await next;
   }
-  const experiment = yield Experiments.findById(id);
+  const experiment = await Experiments.findById(id);
   if (!experiment) {
     this.throw(404, 'Experiment not found.');
   }
@@ -121,19 +120,19 @@ exports.addCompound = function *addCompound(id, next) {
   if (experiment.compounds && experiment.compounds.length === numCompounds) {
     this.throw(400, 'Experiment does not have any available spaces left.');
   }
-  const newCompound = yield Compounds.insert(this.request.body);
+  const newCompound = await Compounds.insert(this.request.body);
   if (!newCompound) {
     this.throw(400, 'Compound request invalid. Please check your request body.');
   }
   const compounds = experiment.compounds;
   compounds.push(newCompound);
-  yield Experiments.findAndModify({ _id: id }, { $set: { compounds } });
-  this.body = yield Experiments.findById(id);
-};
+  await Experiments.findAndModify({ _id: id }, { $set: { compounds } });
+  this.body = await Experiments.findById(id);
+}
 
-exports.removeExperiment = function *removeExperiment(id, next) {
+export async function removeExperiment(id, next) {
   if (this.method !== 'DELETE') {
-    return yield next;
+    return await next;
   }
-  this.body = yield Experiments.remove({ _id: id });
-};
+  this.body = await Experiments.remove({ _id: id });
+}

@@ -1,10 +1,10 @@
 import * as ActionTypes from '../actions';
-// import { pushPath } from 'redux-simple-router';
+// import { pushPath } from 'react-router-redux';
 import jwtDecode from 'jwt-decode';
 
 const initialState = {
   token: null,
-  userName: null,
+  user: {},
   isAuthenticated: false,
   isAuthenticating: false,
   statusText: null,
@@ -24,7 +24,7 @@ export default (state = initialState, action) => {
         isAuthenticating: false,
         isAuthenticated: true,
         token: action.payload.token,
-        userName: jwtDecode(action.payload.token).userName,
+        user: jwtDecode(action.payload.token),
         statusText: 'You have been successfully logged in.',
       };
     case ActionTypes.LOGIN_USER_FAILURE:
@@ -33,7 +33,7 @@ export default (state = initialState, action) => {
         isAuthenticating: false,
         isAuthenticated: false,
         token: null,
-        userName: null,
+        user: {},
         statusText: `Authentication Error: ${action.payload.status} ${action.payload.statusText}`,
       };
     case ActionTypes.LOGOUT_USER:
@@ -41,7 +41,7 @@ export default (state = initialState, action) => {
         ...state,
         isAuthenticated: false,
         token: null,
-        userName: null,
+        user: {},
         statusText: 'You have been successfully logged out.',
       };
     default:

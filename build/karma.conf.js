@@ -10,7 +10,7 @@ const karmaConfig = {
   files: [
     './node_modules/phantomjs-polyfill/bind-polyfill.js',
     {
-      pattern: `./${config.dirTest}/**/*.js`,
+      pattern: `./${config.dirTest}/test-bundler.js`,
       watched: false,
       served: true,
       included: true,
@@ -19,15 +19,14 @@ const karmaConfig = {
   singleRun: !argv.watch,
   frameworks: ['mocha', 'chai-sinon', 'chai-as-promised', 'chai'],
   preprocessors: {
-    [`${config.dirTest}/**/*.js`]: ['webpack'],
+    [`${config.dirTest}/test-bundler.js`]: ['webpack', 'sourcemap'],
   },
   reporters: ['spec'],
   browsers: ['PhantomJS'],
   webpack: {
     devtool: 'inline-source-map',
     resolve: webpackConfig.resolve,
-    plugins: webpackConfig.plugins
-      .filter(plugin => !plugin.__KARMA_IGNORE__),
+    plugins: webpackConfig.plugins,
     module: {
       loaders: webpackConfig.module.loaders,
     },
@@ -41,7 +40,7 @@ const karmaConfig = {
   },
 };
 
-if (config.coverageEnabled) {
+if (config.coverage_enabled) {
   karmaConfig.reporters.push('coverage');
   karmaConfig.webpack.module.preLoaders = [{
     test: /\.(js|jsx)$/,

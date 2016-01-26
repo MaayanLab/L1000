@@ -1,8 +1,10 @@
 /* @flow */
 import { CALL_API, Schemas } from '../middleware/api';
-import { pushPath } from 'redux-simple-router';
+import { pushPath } from 'react-router-redux';
 import jwtDecode from 'jwt-decode';
 // import isEqual from 'lodash/lang/isEqual';
+
+export const REGISTER_USER_REQUEST = 'REGISTER_USER_REQUEST';
 
 export const LOGIN_USER_REQUEST = 'LOGIN_USER_REQUEST';
 export const LOGIN_USER_SUCCESS = 'LOGIN_USER_SUCCESS';
@@ -48,14 +50,14 @@ export function logout() {
 export function logoutAndRedirect() {
   return (dispatch) => {
     dispatch(logout());
-    dispatch(pushPath(null, '/login'));
+    dispatch(pushPath('/'));
   };
 }
 
 export function loginUser(email, password, redirect = '/') {
   return (dispatch) => {
     dispatch(loginUserRequest());
-    return fetch('http://localhost:3000/auth/getToken/', {
+    return fetch('http://localhost:3000/L1000/api/v1/login', {
       method: 'post',
       credentials: 'include',
       headers: {
@@ -76,7 +78,53 @@ export function loginUser(email, password, redirect = '/') {
     .then(response => {
       try {
         dispatch(loginUserSuccess(response.token));
-        dispatch(pushPath(null, redirect));
+        dispatch(pushPath(redirect));
+      } catch (e) {
+        dispatch(loginUserFailure({
+          response: {
+            status: 403,
+            statusText: 'Invalid token',
+          },
+        }));
+      }
+    })
+    .catch(error => {
+      dispatch(loginUserFailure(error));
+    });
+  };
+}
+
+export function registerUserRequest() {
+  return {
+    type: REGISTER_USER_REQUEST,
+  };
+}
+
+export function registerUser(email, password, name, address, phoneNumber, redirect = '/') {
+  return (dispatch) => {
+    dispatch(registerUserRequest());
+    return fetch('http://localhost:3000/L1000/api/v1/register', {
+      method: 'post',
+      credentials: 'include',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email, password, name, address, phoneNumber }),
+    })
+    .then(response => {
+      if (response.status >= 200 && response.status < 300) {
+        return response;
+      }
+      const error = new Error(response.statusText);
+      error.response = response;
+      throw error;
+    })
+    .then(response => response.json())
+    .then(response => {
+      try {
+        dispatch(loginUserSuccess(response.token));
+        dispatch(pushPath(redirect));
       } catch (e) {
         dispatch(loginUserFailure({
           response: {

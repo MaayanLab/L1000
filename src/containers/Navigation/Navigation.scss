@@ -1,0 +1,14 @@
+@import '../../styles/variables';
+
+.main-nav {
+  border: 1px solid transparent;
+  border-bottom-color: $dark-gray;
+  margin-bottom: 2rem;
+  min-height: $nav-height;
+  padding-bottom: ($nav-height - 20) / 2;
+  padding-top: ($nav-height - 20) / 2;
+}
+
+.logout-btn {
+  cursor: pointer;
+}
