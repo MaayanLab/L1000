@@ -1,33 +1,20 @@
 import * as CartActionTypes from 'actions/cart';
+import extend from 'extend';
 // import { pushPath } from 'react-router-redux';
-import jwtDecode from 'jwt-decode';
+// import jwtDecode from 'jwt-decode';
 
 const initialState = {
   items: [],
   subTotal: 0,
+  shippingMethod: '',
+  shippingCost: 0,
   total: 0,
 };
 
 export default (state = initialState, action) => {
   switch (action.type) {
-    case CartActionTypes.ADD_TO_CART:
-      return {
-        ...state,
-        items: [
-          ...state.items,
-          {
-            cartId: state.reduce((maxId, todo) => Math.max(todo.id, maxId), -1) + 1,
-            ...action.item,
-          },
-        ],
-        subTotal: state.subTotal + action.payload.price,
-      };
-    case CartActionTypes.REMOVE_FROM_CART:
-      return {
-        ...state,
-        items: state.items.filter(item => todo.cartId !== action.cartId),
-        subTotal: state.subTotal - action.payload.price,
-      };
+    case CartActionTypes.ADD_TO_CART_SUCCESS:
+      return extend(true, state, action.payload.cart);
     default:
       return state;
   }

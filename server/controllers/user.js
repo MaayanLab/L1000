@@ -1,70 +1,16 @@
 /* eslint no-param-reassign:0 */
 import monk from 'monk';
 import _debug from 'debug';
-import bcrypt from 'bcrypt';
 import config from '../serverConf';
-import { sign, verify } from 'koa-jwt';
 import nodemailer from 'nodemailer';
 import crypto from 'crypto';
 import omit from 'lodash/omit';
+import { hashPassword, comparePassword, createToken, checkToken } from '../utils';
 
 const debug = _debug('app:server:controllers:user');
 const db = monk(config.dbUrl);
 const Users = db.get('users');
 Users.index('email', { unique: true });
-const SALT_WORK_FACTOR = 10;
-
-function createToken(user): String {
-  return sign(user, config.secret, {
-    expiresIn: 2 * 60 * 60, // 2 days
-    issuer: 'http://amp.pharm.mssm.edu/L1000/',
-  });
-}
-
-function checkToken(token): Promise {
-  return new Promise((resolve, reject) => {
-    verify(
-      token,
-      config.secret,
-      { issuer: 'http://amp.pharm.mssm.edu/L1000/' },
-      (err, decoded) => {
-        if (err) {
-          reject(err);
-        } else {
-          resolve(decoded);
-        }
-      }
-    );
-  });
-}
-
-function hashPassword(password): Promise {
-  return new Promise((resolve, reject) => {
-    bcrypt.genSalt(SALT_WORK_FACTOR, (err, salt) => {
-      if (err) {
-        return reject(err);
-      }
-      // hash the password using our new salt
-      bcrypt.hash(password, salt, (hashError, hash) => {
-        if (hashError) {
-          return reject(hashError);
-        }
-        resolve(hash);
-      });
-    });
-  });
-}
-
-function comparePassword(hashedPass, passToCompare): Promise {
-  return new Promise((resolve, reject) => {
-    bcrypt.compare(passToCompare, hashedPass, (err, isMatch) => {
-      if (err) {
-        return reject(err);
-      }
-      resolve(isMatch);
-    });
-  });
-}
 
 export async function checkEmailAvailable(ctx) {
   if (ctx.method !== 'POST') {
@@ -128,7 +74,7 @@ export async function resetPassword(ctx) {
   let userId;
   if (authHeader && authHeader.split(' ')[0] === 'Bearer') {
     const token = authHeader.split(' ')[1];
-    const user = checkToken(token);
+    const user = await checkToken(token);
     userId = user._id;
   }
   if (!userId) {
@@ -157,7 +103,7 @@ export async function resetPassword(ctx) {
 
   try {
     const password = await hashPassword(newPassword);
-    await Users.updateById(userId, { password });
+    await Users.findAndModify({ _id: userId }, { $set: { password } });
     ctx.body = 'Password updated successfully.';
   } catch (e) {
     debug(e);

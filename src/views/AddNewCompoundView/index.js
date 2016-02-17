@@ -74,7 +74,7 @@ export class AddNewCompoundView extends Component {
               : null
             }
           </div>
-          <AddCompoundForm user={this.props.auth.user} onSubmit={this._handleSubmit} />
+          <AddCompoundForm user={auth.user} onSubmit={this._handleSubmit} />
         </div>
       </div>
     );

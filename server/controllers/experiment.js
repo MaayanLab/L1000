@@ -115,7 +115,7 @@ export async function addCompound(ctx, id) {
   }
   const isSingleDose = experiment.type === 'Single Dose';
   const numCompounds = isSingleDose ? 360 : 56;
-  if (experiment.compounds && experiment.compounds.length === numCompounds) {
+  if (experiment.compounds && experiment.compounds.length >= numCompounds) {
     ctx.throw(400, 'Experiment does not have any available spaces left.');
   }
   const newCompound = await Compounds.insert(ctx.request.body);

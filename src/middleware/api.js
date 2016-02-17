@@ -1,5 +1,5 @@
 import { Schema, arrayOf, normalize } from 'normalizr';
-import axios from 'axios';
+import handleResponse from 'utils/handleResponse';
 
 let API_ROOT = '';
 
@@ -14,8 +14,24 @@ if (process.env.NODE_ENV === 'production') {
 function callApi(endpoint, schema, body) {
   const fullUrl = (endpoint.indexOf(API_ROOT) === -1) ? API_ROOT + endpoint : endpoint;
 
-  const apiPromise = !!body ? axios.post(fullUrl, body) : axios.get(fullUrl);
-  return apiPromise.then(response => Object.assign({}, normalize(response.data, schema)));
+  let apiPromise = fetch(fullUrl);
+  if (body) {
+    const token = localStorage.getItem('token');
+    apiPromise = fetch(fullUrl, {
+      method: 'post',
+      credentials: 'include',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+        authorization: token ? `Bearer ${token}` : undefined,
+      },
+    });
+  }
+  return apiPromise
+    .then(response => handleResponse(response))
+    .then(response => response.json())
+    .then(response => Object.assign({}, normalize(response, schema)))
+    .catch(e => Promise.reject(e));
 }
 
 // Normalize JSON response using normalizr

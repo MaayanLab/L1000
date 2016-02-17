@@ -278,8 +278,8 @@ export function resetPasswordSuccess() {
 }
 
 export function resetPassword(oldPassword, newPassword) {
-  return (dispatch) => {
-    const token = localStorage.getItem('token');
+  return (dispatch, getState) => {
+    const token = getState().auth.token;
     if (!token) {
       const err = new Error('Token required to reset password.');
       dispatch(resetPasswordFailure(err));
