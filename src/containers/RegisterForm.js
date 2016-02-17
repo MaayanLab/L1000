@@ -183,7 +183,10 @@ export class RegisterForm extends Component {
 }
 
 RegisterForm.propTypes = {
-  asyncValidating: PropTypes.string,
+  asyncValidating: PropTypes.oneOfType([
+    PropTypes.string,
+    PropTypes.bool,
+  ]),
   resetForm: PropTypes.func.isRequired,
   handleSubmit: PropTypes.func.isRequired,
   submitting: PropTypes.bool.isRequired,
