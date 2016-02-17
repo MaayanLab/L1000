@@ -2,6 +2,41 @@
 @import '~bootstrap/scss/variables';
 @import '~bootstrap/scss/mixins/breakpoints';
 
+.legend {
+  align-items: center;
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+
+  td {
+    text-align: center;
+    height: 30px;
+    width: 80px;
+  }
+}
+
+.cell {
+  border: 2px solid;
+}
+
+.paid {
+  background-color: $green;
+  border-color: darken($green, 15);
+  color: $white;
+}
+
+.taken {
+  background-color: $dark-blue;
+  border-color: $dark-blue-border;
+  color: $white;
+}
+
+.available {
+  background-color: $light-blue;
+  border-color: darken($light-blue-border, 15);
+  color: $white;
+}
+
 .experiment-wrapper {
   display: flex;
   flex-wrap: wrap;

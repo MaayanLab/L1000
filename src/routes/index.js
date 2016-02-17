@@ -8,7 +8,7 @@ import LoginView from 'views/LoginView';
 import AddNewCompound from 'views/AddNewCompoundView';
 import NotFoundView from 'views/NotFoundView';
 
-export default (
+export default (/* store */) => (
   <Route path="/" component={CoreLayout}>
     <IndexRoute component={HomeView} />
     <Route path="/register" component={RegisterView} />

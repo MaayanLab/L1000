@@ -7,7 +7,7 @@ export class NotFoundView extends Component {
     return (
       <div className="container text-xs-center">
         <h1>Page Not Found (404)</h1>
-        <Link to="/">Back To Home View</Link>
+        <Link to="/">Back To Home</Link>
       </div>
     );
   }

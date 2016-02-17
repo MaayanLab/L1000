@@ -2,6 +2,12 @@ import React, { Component, PropTypes } from 'react';
 import { reduxForm } from 'redux-form';
 
 export class LoginForm extends Component {
+  _focusEmail = (inp) => {
+    if (inp !== null) {
+      inp.focus();
+    }
+  };
+
   render() {
     const {
       fields: {
@@ -23,6 +29,7 @@ export class LoginForm extends Component {
             id="email"
             className="form-control"
             placeholder="Enter email"
+            ref={this._focusEmail}
             {...email}
           />
         </fieldset>
@@ -40,6 +47,7 @@ export class LoginForm extends Component {
         </fieldset>
         <div className="form-buttons">
           <button
+            type="button"
             className="btn btn-secondary"
             disabled={submitting}
             onClick={resetForm}
@@ -47,6 +55,7 @@ export class LoginForm extends Component {
             Reset
           </button>
           <button
+            type="submit"
             className="btn submit-btn"
             disabled={submitting}
             onClick={handleSubmit}

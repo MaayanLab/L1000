@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
 import RegisterForm from 'containers/RegisterForm';
 import styles from './RegisterView.scss';
-import { registerUser } from 'actions';
+import { registerUser } from 'actions/auth';
 
 const mapStateToProps = (state) => ({
   auth: state.auth,

@@ -23,6 +23,12 @@
   width: percentage(1/7);
 }
 
+.paid {
+  background-color: $green;
+  border-color: darken($green, 15);
+  color: $white;
+}
+
 .taken {
   background-color: $dark-blue;
   border-color: $dark-blue-border;

@@ -1,50 +1,43 @@
-/* eslint key-spacing:0 spaced-comment:0 */
+/* eslint spaced-comment:0 */
 import _debug from 'debug';
 import path from 'path';
 import { argv } from 'yargs';
 
 const debug = _debug('app:config:_base');
 const config = {
-  env : process.env.NODE_ENV || 'development',
+  env: process.env.NODE_ENV || 'development',
 
   // ----------------------------------
   // Project Structure
   // ----------------------------------
-  pathBase  : path.resolve(__dirname, '../'),
-  dirClient : 'src',
-  dirDist   : 'dist',
-  dirServer : 'server',
-  dirTest   : 'tests',
-
-  // ----------------------------------
-  // Database Configuration
-  // ----------------------------------
-  dbUrl: '146.203.54.131:27017/L1000App',
+  pathBase: path.resolve(__dirname, '../'),
+  dirClient: 'src',
+  dirBin: 'bin',
+  dirDist: 'dist',
+  dirServer: 'server',
+  dirTest: 'tests',
 
   // ----------------------------------
   // Server Configuration
   // ----------------------------------
-  serverHost : 'localhost',
-  serverPort : 3000,
+  serverHost: 'localhost',
+  serverPort: process.env.PORT || 3000,
 
   // ----------------------------------
   // Compiler Configuration
   // ----------------------------------
-  compilerCssModules    : true,
-  compilerDevTool       : 'source-map',
-  compilerEnableHmr     : false,
-  compilerGlobals       : {},
-  compilerSourceMaps    : true,
-  compilerHashType      : 'hash',
-  compilerFailOnWarning : false,
-  compilerQuiet         : false,
-  compilerPublicPath    : '',
-  compilerStats         : {
-    chunks : false,
-    chunkModules : false,
-    colors : true,
+  compilerCssModules: true,
+  compilerDevtool: 'cheap-module-eval-source-map',
+  compilerHashType: 'hash',
+  compilerFailOnWarning: false,
+  compilerQuiet: false,
+  compilerPublicPath: '/L1000/',
+  compilerStats: {
+    chunks: false,
+    chunkModules: false,
+    colors: true,
   },
-  compilerVendor : [
+  compilerVendor: [
     'history',
     'react',
     'react-redux',
@@ -53,42 +46,34 @@ const config = {
     'redux',
     'classnames',
     'redux-form',
-    'jwt-decode',
   ],
 
   // ----------------------------------
   // Test Configuration
   // ----------------------------------
-  coverageEnabled   : !argv.watch,
-  coverageReporters : [
-    { type : 'text-summary' },
-    { type : 'html', dir : 'coverage' },
+  coverageEnabled: !argv.watch,
+  coverageReporters: [
+    { type: 'text-summary' },
+    { type: 'html', dir: 'coverage' },
   ],
+  globals: {},
+  utilsPaths: {},
 };
-
-/************************************************
--------------------------------------------------
-
-All Internal Configuration Below
-Edit at Your Own Risk
-
--------------------------------------------------
-************************************************/
 
 // ------------------------------------
 // Environment
 // ------------------------------------
+// N.B.: globals added here must _also_ be added to .eslintrc
 config.globals = {
-  'process.env'  : {
-    NODE_ENV : JSON.stringify(config.env),
+  'process.env': {
+    NODE_ENV: JSON.stringify(config.env),
   },
-  NODE_ENV     : config.env,
-  __DEV__      : config.env === 'development',
-  __TEST__      : config.env === 'test',
-  __PROD__     : config.env === 'production',
-  __DEBUG__    : config.env === 'development' && !argv.no_debug,
-  __DEBUG_NEW_WINDOW__ : !!argv.nw,
-  __BASENAME__ : JSON.stringify(process.env.BASENAME || '/'),
+  NODE_ENV: config.env,
+  __DEV__: config.env === 'development',
+  __PROD__: config.env === 'production',
+  __TEST__: config.env === 'test',
+  __DEBUG__: config.env === 'development' && !argv.noDebug,
+  __BASENAME__: JSON.stringify(process.env.BASENAME || '/L1000'),
 };
 
 // ------------------------------------
@@ -102,8 +87,8 @@ config.compilerVendor = config.compilerVendor
 
     debug(
       `Package "${dep}" was not found as an npm dependency in package.json; ` +
-      `it won't be included in the webpack vendor bundle.\n` +
-      `Consider removing it from vendor_dependencies in ~/config/index.js`
+      `it won't be included in the webpack vendor bundle.
+       Consider removing it from vendorDependencies in ~/config/index.js`
     );
   });
 
@@ -118,8 +103,8 @@ config.utilsPaths = (() => {
 
   return {
     base,
-    client : base.bind(null, config.dirClient),
-    dist   : base.bind(null, config.dirDist),
+    client: base.bind(null, config.dirClient),
+    dist: base.bind(null, config.dirDist),
   };
 })();
 

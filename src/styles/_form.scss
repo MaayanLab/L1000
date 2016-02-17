@@ -8,10 +8,11 @@
   display: flex;
   justify-content: space-between;
 
-  span {
-    color: $orange;
-    font-style: italic;
-  }
+}
+
+.error {
+  color: $orange;
+  font-style: italic;
 }
 
 .form-buttons {

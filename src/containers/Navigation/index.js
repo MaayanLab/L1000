@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router';
 import cn from 'classnames';
 import styles from './Navigation.scss';
-import { logoutAndRedirect } from 'actions';
+import { logoutAndRedirect } from 'actions/auth';
 
 const mapStateToProps = (state) => ({
   auth: state.auth,

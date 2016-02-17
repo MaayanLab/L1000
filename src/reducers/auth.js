@@ -1,4 +1,4 @@
-import * as ActionTypes from '../actions';
+import * as AuthActionTypes from 'actions/auth';
 // import { pushPath } from 'react-router-redux';
 import jwtDecode from 'jwt-decode';
 
@@ -12,13 +12,19 @@ const initialState = {
 
 export default (state = initialState, action) => {
   switch (action.type) {
-    case ActionTypes.LOGIN_USER_REQUEST:
+    case AuthActionTypes.REGISTER_USER_REQUEST:
       return {
         ...state,
         isAuthenticating: true,
         statusText: null,
       };
-    case ActionTypes.LOGIN_USER_SUCCESS:
+    case AuthActionTypes.LOGIN_USER_REQUEST:
+      return {
+        ...state,
+        isAuthenticating: true,
+        statusText: null,
+      };
+    case AuthActionTypes.LOGIN_USER_SUCCESS:
       return {
         ...state,
         isAuthenticating: false,
@@ -27,7 +33,7 @@ export default (state = initialState, action) => {
         user: jwtDecode(action.payload.token),
         statusText: 'You have been successfully logged in.',
       };
-    case ActionTypes.LOGIN_USER_FAILURE:
+    case AuthActionTypes.LOGIN_USER_FAILURE:
       return {
         ...state,
         isAuthenticating: false,
@@ -36,7 +42,7 @@ export default (state = initialState, action) => {
         user: {},
         statusText: `Authentication Error: ${action.payload.status} ${action.payload.statusText}`,
       };
-    case ActionTypes.LOGOUT_USER:
+    case AuthActionTypes.LOGOUT_USER:
       return {
         ...state,
         isAuthenticated: false,

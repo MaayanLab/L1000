@@ -1,3 +1,4 @@
+/* eslint no-empty:0 */
 import fs from 'fs';
 import _debug from 'debug';
 import config from './_base';
@@ -14,16 +15,16 @@ let hasOverridesFile;
 try {
   fs.lstatSync(`${__dirname}/${overridesFilename}.js`);
   hasOverridesFile = true;
-} catch (e) {
-  debug(`No configuration overrides found for NODE_ENV "${config.env}"`);
-}
+} catch (e) {}
 
 // Overrides file exists, so we can attempt to require it.
 // We intentionally don't wrap this in a try/catch as we want
 // the Node process to exit if an error occurs.
 let overrides;
 if (hasOverridesFile) {
-  overrides = require(`./${overridesFilename}`)(config);
+  overrides = require(`./${overridesFilename}`).default(config);
+} else {
+  debug(`No configuration overrides found for NODE_ENV "${config.env}"`);
 }
 
-export default { ...config, ...overrides };
+export default Object.assign({}, config, overrides);
