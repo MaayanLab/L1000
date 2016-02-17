@@ -72,7 +72,7 @@ export async function checkEmailAvailable(ctx) {
   }
   const { email } = ctx.request.body;
   const userWithEmail = await Users.find({ email });
-  if (userWithEmail) {
+  if (userWithEmail.length > 0) {
     ctx.throw(400, 'Email already exists');
   }
   ctx.body = 'Email available';

@@ -1,5 +1,6 @@
 import { routeActions } from 'react-router-redux';
 import jwtDecode from 'jwt-decode';
+import handleResponse from 'utils/handleResponse';
 
 export const REGISTER_USER_REQUEST = 'REGISTER_USER_REQUEST';
 
@@ -26,15 +27,6 @@ export const CHECK_EMAIL_AVAILABLE_SUCCESS = 'CHECK_EMAIL_AVAILABLE_SUCCESS';
 export const RESET_PASSWORD_REQUEST = 'RESET_PASSWORD_REQUEST';
 export const RESET_PASSWORD_FAILURE = 'RESET_PASSWORD_FAILURE';
 export const RESET_PASSWORD_SUCCESS = 'RESET_PASSWORD_SUCCESS';
-
-function handleResponse(response) {
-  if (response.status >= 200 && response.status < 300) {
-    return response;
-  }
-  const error = new Error(response.statusText);
-  error.response = response;
-  throw error;
-}
 
 export function verifyTokenRequest() {
   return {
@@ -263,51 +255,6 @@ export function getUserFromResetToken(resetToken) {
       .catch(e => {
         dispatch(getUserFromResetTokenFailure(e));
       });
-  };
-}
-
-export function checkEmailAvailableRequest() {
-  return {
-    type: CHECK_EMAIL_AVAILABLE_REQUEST,
-  };
-}
-
-export function checkEmailAvailableFailure(error) {
-  return {
-    type: CHECK_EMAIL_AVAILABLE_FAILURE,
-    error,
-  };
-}
-
-export function checkEmailAvailableSuccess() {
-  return {
-    type: CHECK_EMAIL_AVAILABLE_SUCCESS,
-  };
-}
-
-export function checkEmailAvailable(email) {
-  return (dispatch) => {
-    dispatch(checkEmailAvailableRequest());
-    return fetch('/L1000/api/v1/users/emailAvailable', {
-      method: 'post',
-      credentials: 'include',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ email }),
-    })
-    .then(response => handleResponse(response))
-    .then(() => {
-      try {
-        dispatch(checkEmailAvailableSuccess());
-      } catch (e) {
-        dispatch(checkEmailAvailableFailure(new Error(e)));
-      }
-    })
-    .catch(e => {
-      dispatch(checkEmailAvailableFailure(e));
-    });
   };
 }
 

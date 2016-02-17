@@ -9,7 +9,7 @@ import compress from 'koa-compress';
 import logger from 'koa-logger';
 import config from '../config';
 
-const paths = config.utilsPaths;
+const paths = config.utils_paths;
 const app = new Koa();
 
 app.use(convert(cors()));

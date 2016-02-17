@@ -3,6 +3,6 @@ import flowBin from 'flow-bin';
 
 try {
   cp.execFileSync(flowBin, ['check'], { stdio: 'inherit' });
-} catch (err) {
+} catch (e) {
   process.exit(1);
 }

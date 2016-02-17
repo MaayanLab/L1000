@@ -1,5 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { reduxForm } from 'redux-form';
+import handleResponse from 'utils/handleResponse';
 
 const validate = values => {
   const errors = {
@@ -32,6 +33,22 @@ const validate = values => {
   return errors;
 };
 
+const asyncValidate = ({ email }) =>
+  new Promise((resolve, reject) => {
+    fetch('/L1000/api/v1/users/emailAvailable', {
+      method: 'post',
+      credentials: 'include',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ email }),
+    })
+    .then(response => handleResponse(response))
+    .then(() => resolve())
+    .catch(() => reject({ email: 'Email is taken. Please try another.' }));
+  });
+
 export class RegisterForm extends Component {
   render() {
     const {
@@ -42,10 +59,12 @@ export class RegisterForm extends Component {
         address,
         phoneNumber,
       },
+      asyncValidating,
       submitting,
       resetForm,
       handleSubmit,
     } = this.props;
+    console.log(this.props);
     return (
       <form onSubmit={handleSubmit}>
         <p className="text-xs-center"><em>All Fields are required.</em></p>
@@ -56,6 +75,10 @@ export class RegisterForm extends Component {
               email.touched &&
               email.error &&
               <span className="error">*{email.error}</span>
+            }
+            {
+              asyncValidating === 'email' &&
+              <span className="error">Checking if email is available...</span>
             }
           </div>
           <input
@@ -160,6 +183,7 @@ export class RegisterForm extends Component {
 }
 
 RegisterForm.propTypes = {
+  asyncValidating: PropTypes.string,
   resetForm: PropTypes.func.isRequired,
   handleSubmit: PropTypes.func.isRequired,
   submitting: PropTypes.bool.isRequired,
@@ -169,5 +193,7 @@ RegisterForm.propTypes = {
 export default reduxForm({
   form: 'Register',
   fields: ['email', 'password', 'name', 'address', 'phoneNumber'],
+  asyncValidate,
+  asyncBlurFields: ['email'],
   validate,
 })(RegisterForm);

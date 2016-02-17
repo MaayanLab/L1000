@@ -1,4 +1,3 @@
-/* eslint no-empty:0 */
 import fs from 'fs';
 import _debug from 'debug';
 import config from './_base';

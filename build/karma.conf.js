@@ -11,44 +11,67 @@ const karmaConfig = {
   files: [
     './node_modules/phantomjs-polyfill/bind-polyfill.js',
     {
-      pattern: `./${config.dirTest}/test-bundler.js`,
+      pattern: `./${config.dir_test}/test-bundler.js`,
       watched: false,
       served: true,
-      included: true,
-    },
+      included: true
+    }
   ],
   singleRun: !argv.watch,
-  frameworks: ['mocha', 'chai-sinon', 'chai-as-promised', 'chai'],
+  frameworks: ['mocha'],
+  reporters: ['mocha'],
   preprocessors: {
-    [`${config.dirTest}/test-bundler.js`]: ['webpack', 'sourcemap'],
+    [`${config.dir_test}/test-bundler.js`]: ['webpack']
   },
-  reporters: ['spec'],
   browsers: ['PhantomJS'],
   webpack: {
-    devtool: 'inline-source-map',
-    resolve: webpackConfig.resolve,
+    devtool: 'cheap-module-source-map',
+    resolve: {
+      ...webpackConfig.resolve,
+      alias: {
+        ...webpackConfig.resolve.alias,
+        sinon: 'sinon/pkg/sinon.js'
+      }
+    },
     plugins: webpackConfig.plugins,
     module: {
-      loaders: webpackConfig.module.loaders,
+      noParse: [
+        /\/sinon\.js/
+      ],
+      loaders: webpackConfig.module.loaders.concat([
+        {
+          test: /sinon(\\|\/)pkg(\\|\/)sinon\.js/,
+          loader: 'imports?define=>false,require=>false'
+        }
+      ])
     },
-    sassLoader: webpackConfig.sassLoader,
+    externals: {
+      ...webpackConfig.externals,
+      jsdom: 'window',
+      cheerio: 'window',
+      'react/lib/ExecutionEnvironment': true,
+      'react/lib/ReactContext': 'window',
+      'text-encoding': 'window'
+    },
+    sassLoader: webpackConfig.sassLoader
   },
   webpackMiddleware: {
-    noInfo: true,
+    noInfo: true
   },
   coverageReporter: {
-    reporters: config.coverageReporters,
-  },
+    reporters: config.coverage_reporters
+  }
 };
 
-if (config.coverageEnabled) {
+if (config.coverage_enabled) {
   karmaConfig.reporters.push('coverage');
   karmaConfig.webpack.module.preLoaders = [{
     test: /\.(js|jsx)$/,
-    include: new RegExp(config.dirClient),
+    include: new RegExp(config.dir_client),
     loader: 'isparta',
-    exclude: /node_modules/,
+    exclude: /node_modules/
   }];
 }
 
-export default (cfg) => cfg.set(karmaConfig);
+// cannot use `export default` because of Karma.
+module.exports = (cfg) => cfg.set(karmaConfig);
