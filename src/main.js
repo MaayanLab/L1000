@@ -33,7 +33,6 @@ const mountNode = document.getElementById('root');
 // Let react-modal know where our app is mounted.
 Modal.setAppElement(mountNode);
 
-
 // Render to the DOM
 ReactDOM.render(
   <Root history={history} routes={routes} store={store} />,

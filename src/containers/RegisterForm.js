@@ -64,7 +64,6 @@ export class RegisterForm extends Component {
       resetForm,
       handleSubmit,
     } = this.props;
-    console.log(this.props);
     return (
       <form onSubmit={handleSubmit}>
         <p className="text-xs-center"><em>All Fields are required.</em></p>
