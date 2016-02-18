@@ -78,5 +78,5 @@ AddCompoundForm.propTypes = {
 
 export default reduxForm({
   form: 'AddCompound',
-  fields: ['email', 'compoundName'],
+  fields: ['compoundName'],
 })(AddCompoundForm);

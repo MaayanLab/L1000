@@ -3,6 +3,7 @@ import route from 'koa-route';
 import jwt from 'koa-jwt';
 import convert from 'koa-convert';
 import * as experiment from '../controllers/experiment';
+import * as compound from '../controllers/compound';
 import * as user from '../controllers/user';
 import * as cart from '../controllers/cart';
 import config from '../serverConf';
@@ -29,6 +30,10 @@ export default function routes(app) {
   app.use(route.get(`${BASE}/experiments/completed`, experiment.findCompleted));
   app.use(route.get(`${BASE}/experiments/available`, experiment.findWithAvailableSpots));
 
+  // Compounds
+  app.use(route.get(`${BASE}/compounds`, compound.findAll));
+  app.use(route.get(`${BASE}/compounds/:id`, compound.findById));
+
   // Protected Routes
 
   // Check for a valid JWT in header
@@ -40,6 +45,7 @@ export default function routes(app) {
   // Cart
   app.use(route.post(`${BASE}/users/cart/add`, cart.addToCart));
   app.use(route.post(`${BASE}/users/cart/remove`, cart.removeFromCart));
+  app.use(route.post(`${BASE}/users/cart/quantity/update`, cart.updateQuantity));
 
   // Experiments
   app.use(route.post(`${BASE}/experiments/add`, experiment.addExperiment));

@@ -25,6 +25,7 @@ function callApi(endpoint, schema, body) {
         'Content-Type': 'application/json',
         authorization: token ? `Bearer ${token}` : undefined,
       },
+      body: JSON.stringify(body),
     });
   }
   return apiPromise
@@ -35,7 +36,6 @@ function callApi(endpoint, schema, body) {
 }
 
 // Normalize JSON response using normalizr
-
 const compoundSchema = new Schema('compounds', { idAttribute: '_id' });
 const experimentSchema = new Schema('experiments', { idAttribute: '_id' });
 experimentSchema.define({ compounds: arrayOf(compoundSchema) });

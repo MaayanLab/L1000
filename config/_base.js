@@ -38,10 +38,17 @@ const config = {
   compiler_vendor: [
     'history',
     'react',
+    'react-modal',
     'react-redux',
     'react-router',
     'react-router-redux',
     'redux',
+    'redux-form',
+    'redux-thunk',
+    'classnames',
+    'jwt-decode',
+    'lodash',
+    'normalizr',
   ],
 
   // ----------------------------------

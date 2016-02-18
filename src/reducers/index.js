@@ -3,6 +3,7 @@ import { routeReducer as router } from 'react-router-redux';
 import { reducer as formReducer } from 'redux-form';
 import merge from 'lodash/merge';
 import auth from './auth';
+import pendingRequests from './pendingRequests';
 import * as AuthActionTypes from 'actions/auth';
 import * as EntityActionTypes from 'actions/entities';
 
@@ -29,6 +30,7 @@ function errorMessage(state = null, action) {
 
 export default combineReducers({
   entities,
+  pendingRequests,
   errorMessage,
   router,
   auth,

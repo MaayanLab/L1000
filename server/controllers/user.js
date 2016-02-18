@@ -32,6 +32,15 @@ export async function register(ctx) {
   const hashedPass = await hashPassword(userObj.password);
   userObj.password = hashedPass;
 
+  // Add empty cart
+  userObj.cart = {
+    items: [],
+    subTotal: 0,
+    shippingMethod: '',
+    shippingCost: 0,
+    total: 0,
+  };
+
   const newUser = await Users.insert(userObj);
   if (!newUser) {
     ctx.throw(400, 'Could not sign up user. Please check your request body.');

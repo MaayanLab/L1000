@@ -3,17 +3,16 @@ import { connect } from 'react-redux';
 // import { Link } from 'react-router';
 import { routeActions } from 'react-router-redux';
 
-import styles from './ProfileView.scss';
+// import styles from './ProfileView.scss';
 
 const mapStateToProps = (state) => ({
   auth: state.auth,
 });
 export class ProfileView extends Component {
   render() {
-    const { auth, params } = this.props;
+    const { auth } = this.props;
     return (
       <div className="container">
-      <h1>{params.userId}</h1>
       <h1>{auth.user.email}</h1>
       </div>
     );
@@ -21,7 +20,6 @@ export class ProfileView extends Component {
 }
 
 ProfileView.propTypes = {
-  params: PropTypes.object.isRequired,
   auth: PropTypes.object.isRequired,
 };
 

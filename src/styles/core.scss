@@ -9,6 +9,7 @@
 
   html,
   body {
+    background-color: $light-gray;
     font-family: 'Lato', sans-serif;
     height: 100%;
     margin: 0;
@@ -18,8 +19,8 @@
   * {
     box-sizing: inherit;
 
-    &:before,
-    &:after {
+    &::before,
+    &::after {
       box-sizing: inherit;
     }
   }

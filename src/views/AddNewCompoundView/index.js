@@ -5,7 +5,8 @@ import { routeActions } from 'react-router-redux';
 import Modal from 'react-modal';
 
 import { loginUser } from 'actions/auth';
-import { addCompound, loadExperiments } from 'actions/entities';
+import { loadExperiments } from 'actions/entities';
+import { addToCart } from 'actions/cart';
 import AddCompoundForm from 'containers/AddCompoundForm';
 import LoginForm from 'containers/LoginForm';
 import Experiment from 'components/Experiment';
@@ -26,9 +27,18 @@ export class AddNewCompoundView extends Component {
     this.props.goBack();
   };
 
-  _handleSubmit = (formData) => {
-    const { params } = this.props;
-    this.props.addCompound(formData, params.experimentId);
+  _handleSubmit = ({ compoundName }) => {
+    // Rest of compound is taken from user object
+    const { params, auth } = this.props;
+    const { name, email, address, phoneNumber } = auth.user;
+    const compound = {
+      submitter: { name, email, address, phoneNumber },
+      name: compoundName,
+      status: 'reserved',
+    };
+
+    this.props.addToCart(compound, params.experimentId);
+    // console.log(entities.compounds);
     // TODO: Eventually go to an experiment or compound specific page
     // this.props.push(`/experiments/${experimentId}/compounds/${compoundId}`);
     this.props.push('/');
@@ -89,12 +99,12 @@ AddNewCompoundView.propTypes = {
   push: PropTypes.func.isRequired, // Extracted from ...routeActions below
   goBack: PropTypes.func.isRequired, // Extracted from ...routeActions below
   loginUser: PropTypes.func.isRequired,
-  addCompound: PropTypes.func.isRequired,
+  addToCart: PropTypes.func.isRequired,
   loadExperiments: PropTypes.func.isRequired,
 };
 
 export default connect(mapStateToProps, {
-  addCompound,
+  addToCart,
   loginUser,
   loadExperiments,
   ...routeActions,

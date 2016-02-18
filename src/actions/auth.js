@@ -10,6 +10,7 @@ export const LOGIN_USER_REQUEST = 'LOGIN_USER_REQUEST';
 export const LOGIN_USER_SUCCESS = 'LOGIN_USER_SUCCESS';
 export const LOGIN_USER_FAILURE = 'LOGIN_USER_FAILURE';
 
+export const UPDATE_USER = 'UPDATE_USER';
 export const LOGOUT_USER = 'LOGOUT_USER';
 
 export const FORGOT_PASSWORD_REQUEST = 'FORGOT_PASSWORD_REQUEST';
@@ -62,6 +63,13 @@ export function loginUserRequest() {
   };
 }
 
+export function updateUser({ user, token }) {
+  localStorage.setItem('token', token);
+  return {
+    type: UPDATE_USER,
+    payload: { user, token },
+  };
+}
 
 export function logout() {
   localStorage.removeItem('token');

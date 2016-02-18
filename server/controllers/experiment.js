@@ -9,23 +9,23 @@ const db = monk(config.dbUrl);
 const Compounds = db.get('compounds');
 const Experiments = db.get('experiments');
 
-Compounds.drop();
-Experiments.drop();
-
-Experiments.insert({
-  title: 'Experiment 1',
-  type: 'Single Dose',
-  description: 'Description of Experiment 1. Description of Experiment 1. ' +
-    'Description of Experiment 1.',
-  compounds: [],
-});
-Experiments.insert({
-  title: 'Experiment 2',
-  type: 'Dose Response',
-  description: 'Description of Experiment 2. Description of Experiment 2. ' +
-    'Description of Experiment 2.',
-  compounds: [],
-});
+// Compounds.drop();
+// Experiments.drop();
+//
+// Experiments.insert({
+//   title: 'Experiment 1',
+//   type: 'Single Dose',
+//   description: 'Description of Experiment 1. Description of Experiment 1. ' +
+//     'Description of Experiment 1.',
+//   compounds: [],
+// });
+// Experiments.insert({
+//   title: 'Experiment 2',
+//   type: 'Dose Response',
+//   description: 'Description of Experiment 2. Description of Experiment 2. ' +
+//     'Description of Experiment 2.',
+//   compounds: [],
+// });
 
 Experiments.index('title', { unique: true });
 
@@ -118,7 +118,9 @@ export async function addCompound(ctx, id) {
   if (experiment.compounds && experiment.compounds.length >= numCompounds) {
     ctx.throw(400, 'Experiment does not have any available spaces left.');
   }
+  console.log(ctx.request.body);
   const newCompound = await Compounds.insert(ctx.request.body);
+  console.log(newCompound);
   if (!newCompound) {
     ctx.throw(400, 'Compound request invalid. Please check your request body.');
   }

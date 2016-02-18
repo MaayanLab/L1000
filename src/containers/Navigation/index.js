@@ -24,8 +24,13 @@ export class Navigation extends Component {
             </a>
           </li>
           <li className="nav-item">
-            <Link className="nav-link" to={`/user/${user._id}/profile`}>
+            <Link className="nav-link" to="/user/profile">
               {user.name}
+            </Link>
+          </li>
+          <li className="nav-item">
+            <Link className="nav-link" to="/user/cart">
+              Cart
             </Link>
           </li>
           <li className="nav-item">

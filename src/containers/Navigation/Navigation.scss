@@ -1,6 +1,7 @@
-@import '../../styles/variables';
+@import 'variables';
 
 .main-nav {
+  background-color: $white;
   border: 1px solid transparent;
   border-bottom-color: $dark-gray;
   margin-bottom: 2rem;
