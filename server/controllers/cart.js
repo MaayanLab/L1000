@@ -3,6 +3,7 @@ import monk from 'monk';
 // import _debug from 'debug';
 import isEqual from 'lodash/isEqual';
 import omit from 'lodash/omit';
+import filter from 'lodash/filter';
 
 import config from '../serverConf';
 import { createToken, getUserFromHeader } from '../utils';
@@ -12,6 +13,12 @@ const db = monk(config.dbUrl);
 const Users = db.get('users');
 const Experiments = db.get('experiments');
 const Compounds = db.get('compounds');
+
+function calcCartSubtotal(cart) {
+  let subTotal = 0.00;
+  cart.items.forEach((item) => subTotal += item.price * item.quantity);
+  return subTotal;
+}
 
 export async function addToCart(ctx) {
   if (ctx.method !== 'POST') {
@@ -39,11 +46,25 @@ export async function addToCart(ctx) {
       }],
       subTotal: price,
     };
-    const updatedUser = await Users.findAndModify({ _id: user._id }, { $set: { cart } });
-    ctx.body = omit(updatedUser, 'password');
+    // Need to create a new token with new user
+    // For some reason, findAndModify does not work here.
+    // Update the user and if the update is successful, set the new cart items
+    // On the original user and send that user back in the response.
+    const updateUser = await Users.updateById(user._id, { $set: { cart } });
+    if (!updateUser) {
+      ctx.throw(500, 'User not updated.');
+    }
+    user.cart = cart;
+    // Need to create a new token with new user
+    const userWOPassword = omit(user, 'password');
+    ctx.body = {
+      token: createToken(userWOPassword),
+      user: userWOPassword,
+    };
   } else {
     let itemExists = false;
-    const newCartItems = user.cart.items.map((itemObj) => {
+    const cart = user.cart;
+    const newCartItems = cart.items.map((itemObj) => {
       if (itemObj.compound && isEqual(itemObj.compound, compound) &&
         itemObj.experimentId && itemObj.experimentId === experimentId) {
         itemExists = true;
@@ -60,12 +81,20 @@ export async function addToCart(ctx) {
         price,
       });
     }
-    let subTotal = 0.00;
-    newCartItems.forEach((item) => subTotal += item.price);
-    const cart = { ...user.cart, items: newCartItems, subTotal };
+    cart.items = newCartItems;
+    cart.subTotal = calcCartSubtotal(cart);
+
     // Need to create a new token with new user
-    const updatedUser = await Users.findAndModify({ _id: user._id }, { $set: { cart } });
-    const userWOPassword = omit(updatedUser, 'password');
+    // For some reason, findAndModify does not work here.
+    // Update the user and if the update is successful, set the new cart items
+    // On the original user and send that user back in the response.
+    const updateUser = await Users.updateById(user._id, { $set: { cart } });
+    if (!updateUser) {
+      ctx.throw(500, 'User not updated.');
+    }
+    user.cart = cart;
+    // Need to create a new token with new user
+    const userWOPassword = omit(user, 'password');
     ctx.body = {
       token: createToken(userWOPassword),
       user: userWOPassword,
@@ -73,30 +102,35 @@ export async function addToCart(ctx) {
   }
 }
 
-export async function removeFromCart(ctx) {
+export async function removeItemFromCart(ctx) {
   if (ctx.method !== 'POST') {
     ctx.throw(400, 'Bad Request');
   }
   const { cartId } = ctx.request.body;
-  if (!cartId) {
+  if (cartId === undefined) {
     ctx.throw(400, 'Cart Id not sent with request.');
   }
   const userFromToken = await getUserFromHeader(ctx);
   const user = await Users.findById(userFromToken._id);
   const cart = user.cart;
-  const removeIndex = cart.items.map((item) => item.cartId).indexOf(cartId);
-  if (removeIndex > -1) {
-    cart.items.splice(removeIndex, 1);
-    // Need to create a new token with new user
-    const updatedUser = await Users.findAndModify({ _id: user._id }, { $set: { cart } });
-    const userWOPassword = omit(updatedUser, 'password');
-    ctx.body = {
-      token: createToken(userWOPassword),
-      user: userWOPassword,
-    };
-  } else {
-    ctx.throw(400, 'Item does not exist in cart.');
+  const newCartItems = filter(cart.items, (item) => item.cartId !== cartId);
+  cart.items = newCartItems;
+  cart.subTotal = calcCartSubtotal(cart);
+  // Need to create a new token with new user
+  // For some reason, findAndModify does not work here.
+  // Update the user and if the update is successful, set the new cart items
+  // On the original user and send that user back in the response.
+  const updateUser = await Users.updateById(user._id, { $set: { cart } });
+  if (!updateUser) {
+    ctx.throw(500, 'User not updated.');
   }
+  user.cart = cart;
+  // Need to create a new token with new user
+  const userWOPassword = omit(user, 'password');
+  ctx.body = {
+    token: createToken(userWOPassword),
+    user: userWOPassword,
+  };
 }
 
 export async function updateQuantity(ctx) {
@@ -106,7 +140,7 @@ export async function updateQuantity(ctx) {
   const { cartId } = ctx.request.body;
   const newQuantity = parseInt(ctx.request.body.newQuantity, 10);
   if (newQuantity < 1) {
-    removeFromCart(ctx);
+    removeItemFromCart(ctx);
     return;
   }
   if (cartId === undefined || !newQuantity) {
@@ -114,8 +148,9 @@ export async function updateQuantity(ctx) {
   }
   const userFromToken = await getUserFromHeader(ctx);
   const user = await Users.findById(userFromToken._id);
+  const cart = user.cart;
   let itemExists = false;
-  const newCartItems = user.cart.items.map((item) => {
+  const newCartItems = cart.items.map((item) => {
     if (item.cartId === cartId) {
       itemExists = true;
       return { ...item, quantity: newQuantity };
@@ -125,18 +160,15 @@ export async function updateQuantity(ctx) {
   if (!itemExists) {
     ctx.throw(400, 'Item does not exist in cart.');
   }
+  cart.items = newCartItems;
+  cart.subTotal = calcCartSubtotal(cart);
   // For some reason, findAndModify does not work here.
   // Update the user and if the update is successful, set the new cart items
   // On the original user and send that user back in the response.
-  const updateUser = await Users.updateById(user._id, {
-    $set: {
-      'cart.items': newCartItems,
-    },
-  });
+  const updateUser = await Users.updateById(user._id, { $set: { cart } });
   if (!updateUser) {
     ctx.throw(500, 'User not updated.');
   }
-  user.cart.items = newCartItems;
   // Need to create a new token with new user
   const userWOPassword = omit(user, 'password');
   ctx.body = {

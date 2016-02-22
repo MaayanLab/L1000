@@ -6,9 +6,9 @@ export const ADD_TO_CART_REQUEST = 'ADD_TO_CART_REQUEST';
 export const ADD_TO_CART_SUCCESS = 'ADD_TO_CART_SUCCESS';
 export const ADD_TO_CART_FAILURE = 'ADD_TO_CART_FAILURE';
 
-export const REMOVE_FROM_CART_REQUEST = 'REMOVE_FROM_CART_REQUEST';
-export const REMOVE_FROM_CART_SUCCESS = 'REMOVE_FROM_CART_SUCCESS';
-export const REMOVE_FROM_CART_FAILURE = 'REMOVE_FROM_CART_FAILURE';
+export const REMOVE_ITEM_FROM_CART_REQUEST = 'REMOVE_ITEM_FROM_CART_REQUEST';
+export const REMOVE_ITEM_FROM_CART_SUCCESS = 'REMOVE_ITEM_FROM_CART_SUCCESS';
+export const REMOVE_ITEM_FROM_CART_FAILURE = 'REMOVE_ITEM_FROM_CART_FAILURE';
 
 export const UPDATE_QUANTITY_REQUEST = 'UPDATE_QUANTITY_REQUEST';
 export const UPDATE_QUANTITY_SUCCESS = 'UPDATE_QUANTITY_SUCCESS';
@@ -58,31 +58,31 @@ export function addToCart(compound, experimentId) {
   };
 }
 
-function removeFromCartRequest() {
-  return { type: REMOVE_FROM_CART_REQUEST };
+function removeItemFromCartRequest() {
+  return { type: REMOVE_ITEM_FROM_CART_REQUEST };
 }
 
-function removeFromCartSuccess(updatedCart) {
+function removeItemFromCartSuccess(updatedCart) {
   return {
-    type: REMOVE_FROM_CART_SUCCESS,
+    type: REMOVE_ITEM_FROM_CART_SUCCESS,
     payload: {
       cart: updatedCart,
     },
   };
 }
 
-function removeFromCartFailure(error) {
+function removeItemFromCartFailure(error) {
   return {
-    type: REMOVE_FROM_CART_FAILURE,
+    type: REMOVE_ITEM_FROM_CART_FAILURE,
     error,
   };
 }
 
 
-export function removeFromCart(compoundId, experimentId) {
+export function removeItemFromCart(cartId) {
   return (dispatch, getState) => {
     const { token } = getState().auth;
-    dispatch(removeFromCartRequest());
+    dispatch(removeItemFromCartRequest());
     return fetch('/L1000/api/v1/users/cart/remove', {
       method: 'post',
       credentials: 'include',
@@ -91,12 +91,15 @@ export function removeFromCart(compoundId, experimentId) {
         'Content-Type': 'application/json',
         authorization: token ? `Bearer ${token}` : undefined,
       },
-      body: JSON.stringify({ compoundId, experimentId }),
+      body: JSON.stringify({ cartId }),
     })
       .then(response => handleResponse(response))
       .then(response => response.json())
-      .then(response => dispatch(removeFromCartSuccess(response.cart)))
-      .catch(e => dispatch(removeFromCartFailure(e)));
+      .then(response => {
+        dispatch(removeItemFromCartSuccess());
+        dispatch(updateUser(response));
+      })
+      .catch(e => dispatch(removeItemFromCartFailure(e)));
   };
 }
 

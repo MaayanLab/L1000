@@ -56,10 +56,18 @@ export default (state = initialState, action) => {
         statusText: `Authentication Error: ${action.payload.status} ${action.payload.statusText}`,
       };
     case AuthActionTypes.UPDATE_USER:
-      console.log(action.payload.user);
+      // HACK: jQuery extend merges arrays instead of replacing them.
+      // user.cart.items and user.cart.subTotal are set explicitly from action.
       return {
         ...state,
-        user: extend(true, {}, state.user, action.payload.user),
+        user: {
+          ...state.user,
+          cart: {
+            ...state.user.cart,
+            items: action.payload.user.cart.items,
+            subTotal: action.payload.user.cart.subTotal,
+          },
+        },
       };
     case AuthActionTypes.LOGOUT_USER:
       return {

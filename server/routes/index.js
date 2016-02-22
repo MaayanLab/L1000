@@ -44,7 +44,7 @@ export default function routes(app) {
 
   // Cart
   app.use(route.post(`${BASE}/users/cart/add`, cart.addToCart));
-  app.use(route.post(`${BASE}/users/cart/remove`, cart.removeFromCart));
+  app.use(route.post(`${BASE}/users/cart/remove`, cart.removeItemFromCart));
   app.use(route.post(`${BASE}/users/cart/quantity/update`, cart.updateQuantity));
 
   // Experiments

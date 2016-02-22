@@ -1,8 +1,9 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
+import { Link } from 'react-router';
 import cn from 'classnames';
 import { loadCompounds } from 'actions/entities';
-import { updateQuantity } from 'actions/cart';
+import { updateQuantity, removeItemFromCart } from 'actions/cart';
 import CheckoutButton from 'components/CheckoutButton';
 import CartItem from 'components/CartItem';
 import styles from './CheckoutView.scss';
@@ -21,6 +22,10 @@ export class CheckoutView extends Component {
     this.props.updateQuantity(cartId, newQuantity);
   };
 
+  _removeItem = (cartId) => {
+    this.props.removeItemFromCart(cartId);
+  };
+
   _handleCheckoutClick = () => {
     // console.log(this.props.auth.user.cart);
   };
@@ -31,11 +36,28 @@ export class CheckoutView extends Component {
     const { cart } = auth.user;
     let total = cart.subTotal + cart.tax + cart.shippingCost;
     total = total || 0.00;
+    if (!cart.items.length) {
+      return (
+        <div className="container">
+          <h1>No items in cart.</h1>
+          <h3><Link to="/">Return Home.</Link></h3>
+        </div>
+      );
+    }
     return (
       <div className="container">
         <div className="col-xs-8">
+          <div className="col-xs-4 text-xs-center">
+            <h6>Item</h6>
+          </div>
+          <div className="col-xs-5 text-xs-center">
+            <h6>Quantity</h6>
+          </div>
+          <div className="col-xs-3 text-xs-center">
+            <h6>Price</h6>
+          </div>
           {
-            !!cart.items && cart.items.map((item) => {
+            cart.items.map((item) => {
               if (this.props.pendingRequests.isPending) {
                 return (
                   <CartItem key={item.cartId} placeholder />
@@ -47,6 +69,7 @@ export class CheckoutView extends Component {
                 <CartItem
                   key={item.cartId}
                   onUpdateQuantity={this._handleQuantity}
+                  onRemoveItem={this._removeItem}
                   item={item}
                   compound={compound}
                   experiment={experiment}
@@ -75,7 +98,7 @@ export class CheckoutView extends Component {
               <span className={cn([styles['cost-type'], styles['total-type']])}>
                 Total
               </span>
-              <h2 className={styles.total}>$ {total}</h2>
+              <h2 className={styles.total}>${total}</h2>
             </div>
           </div>
           <CheckoutButton className={styles['checkout-btn']} onClick={this._handleCheckoutClick} />
@@ -90,10 +113,12 @@ CheckoutView.propTypes = {
   entities: PropTypes.object.isRequired,
   loadCompounds: PropTypes.func.isRequired,
   updateQuantity: PropTypes.func.isRequired,
+  removeItemFromCart: PropTypes.func.isRequired,
   pendingRequests: PropTypes.object.isRequired,
 };
 
 export default connect(mapStateToProps, {
   updateQuantity,
+  removeItemFromCart,
   loadCompounds,
 })(CheckoutView);

@@ -8,13 +8,22 @@
   padding: 1rem;
 }
 
+.quantity {
+  p {
+    cursor: pointer;
+    font-size: .9rem;
+    margin-bottom: .25rem;
+  }
+}
+
 .quantity-input {
-  text-align: right;
+  margin-bottom: .25rem;
+  text-align: center;
   width: 30px;
 }
 
 .quantity-btn {
   height: 30px;
-  margin: 0 10px 3px;
-  padding: 0;
+  margin: 0 0 3px 9px;
+  padding: 0 10px;
 }

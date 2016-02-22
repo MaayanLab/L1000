@@ -38,10 +38,7 @@ export class AddNewCompoundView extends Component {
     };
 
     this.props.addToCart(compound, params.experimentId);
-    // console.log(entities.compounds);
-    // TODO: Eventually go to an experiment or compound specific page
-    // this.props.push(`/experiments/${experimentId}/compounds/${compoundId}`);
-    this.props.push('/');
+    this.props.push('/user/cart');
   };
 
   render() {

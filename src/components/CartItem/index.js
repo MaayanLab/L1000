@@ -11,10 +11,9 @@ class CartItem extends Component {
   }
 
   componentWillReceiveProps(props) {
-    // const item = props.auth.cart.items[props.cartId];
-    // if (item && item.quantity) {
-    //   this.setState({ quantity: props.item.quantity });
-    // }
+    if (props.item && props.item.quantity) {
+      this.setState({ quantity: props.item.quantity });
+    }
   }
 
   _handleQuantityInput = (event) => {
@@ -23,9 +22,13 @@ class CartItem extends Component {
 
   _handleQuantitySubmit = () => {
     const { item } = this.props;
-    console.log(this.state.quantity);
     const quantity = parseInt(this.state.quantity, 10);
     this.props.onUpdateQuantity(item.cartId, quantity);
+  };
+
+  _handleRemove = () => {
+    const { item } = this.props;
+    this.props.onRemoveItem(item.cartId);
   };
 
   render() {
@@ -42,12 +45,11 @@ class CartItem extends Component {
     const totalPrice = item.quantity * item.price;
     return (
       <div className={cn(['col-xs-12', styles['cart-item']])}>
-        <div className="col-xs-8">
+        <div className="col-xs-4">
           <h4>{compound && compound.name}</h4>
           <h6>{experiment.title}</h6>
         </div>
-        <div className="col-xs-4">
-          <h4 className="text-xs-center">$ {totalPrice}</h4>
+        <div className={cn(['col-xs-5', 'text-xs-center', styles.quantity])}>
           <input
             type="text"
             pattern="[0-9]*"
@@ -55,14 +57,29 @@ class CartItem extends Component {
             onChange={self._handleQuantityInput}
             value={this.state.quantity}
           />
-          <button
-            type="submit"
-            className={cn(['btn', 'btn-secondary', styles['quantity-btn']])}
-            onClick={this._handleQuantitySubmit}
-          >
-            Update
-          </button>
+          <p>
+            <a onClick={this._handleQuantitySubmit}>Update</a>
+          </p>
+          <p>
+            <a onClick={this._handleRemove}>Remove</a>
+          </p>
         </div>
+          {
+            item.quantity > 1
+            ? (
+              <div className="col-xs-3">
+                <h6 className="text-xs-right">${item.price}</h6>
+                <h6 className="text-xs-right">* {item.quantity}</h6>
+                <hr />
+                <h4 className="text-xs-right">${totalPrice}</h4>
+              </div>
+            )
+            : (
+              <div className="col-xs-3">
+                <h4 className="text-xs-right">${totalPrice}</h4>
+              </div>
+            )
+          }
       </div>
     );
   }
@@ -73,6 +90,7 @@ CartItem.propTypes = {
   experiment: PropTypes.object,
   compound: PropTypes.object,
   onUpdateQuantity: PropTypes.func,
+  onRemoveItem: PropTypes.func,
   placeholder: PropTypes.bool,
 };
 
