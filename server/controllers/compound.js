@@ -1,22 +1,18 @@
 /* eslint no-param-reassign:0 */
-import monk from 'monk';
 // import _debug from 'debug';
-import config from '../serverConf';
-
 // const debug = _debug('app:server:controllers:compound');
-const db = monk(config.dbUrl);
-const Compounds = db.get('compounds');
+import Compound from '../models/Compound';
 
 export async function findAll(ctx) {
   if (ctx.method !== 'GET') {
     ctx.throw(400, 'Bad Request');
   }
-  ctx.body = await Compounds.find({});
+  ctx.body = await Compound.find({}).exec();
 }
 
 export async function findById(ctx, id) {
   if (ctx.method !== 'GET') {
     ctx.throw(400, 'Bad Request');
   }
-  ctx.body = await Compounds.findById(id);
+  ctx.body = await Compound.findById(id).exec();
 }

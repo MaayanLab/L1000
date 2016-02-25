@@ -3,7 +3,7 @@ import _debug from 'debug';
 import config from '../config';
 
 const debug = _debug('app:build:webpack-compiler');
-const DEFAULT_STATS_FORMAT = config.compiler_stats;
+const DEFAULT_STATS_FORMAT = config.compilerStats;
 
 export default function webpackCompiler(webpackConfig, statsFormat = DEFAULT_STATS_FORMAT) {
   return new Promise((resolve, reject) => {
@@ -32,4 +32,3 @@ export default function webpackCompiler(webpackConfig, statsFormat = DEFAULT_STA
     });
   });
 }
-

@@ -11,17 +11,17 @@ const karmaConfig = {
   files: [
     './node_modules/phantomjs-polyfill/bind-polyfill.js',
     {
-      pattern: `./${config.dir_test}/test-bundler.js`,
+      pattern: `./${config.dirTest}/test-bundler.js`,
       watched: false,
       served: true,
-      included: true
-    }
+      included: true,
+    },
   ],
   singleRun: !argv.watch,
   frameworks: ['mocha'],
   reporters: ['mocha'],
   preprocessors: {
-    [`${config.dir_test}/test-bundler.js`]: ['webpack']
+    [`${config.dirTest}/test-bundler.js`]: ['webpack'],
   },
   browsers: ['PhantomJS'],
   webpack: {
@@ -30,20 +30,20 @@ const karmaConfig = {
       ...webpackConfig.resolve,
       alias: {
         ...webpackConfig.resolve.alias,
-        sinon: 'sinon/pkg/sinon.js'
-      }
+        sinon: 'sinon/pkg/sinon.js',
+      },
     },
     plugins: webpackConfig.plugins,
     module: {
       noParse: [
-        /\/sinon\.js/
+        /\/sinon\.js/,
       ],
       loaders: webpackConfig.module.loaders.concat([
         {
           test: /sinon(\\|\/)pkg(\\|\/)sinon\.js/,
-          loader: 'imports?define=>false,require=>false'
-        }
-      ])
+          loader: 'imports?define=>false,require=>false',
+        },
+      ]),
     },
     externals: {
       ...webpackConfig.externals,
@@ -51,25 +51,25 @@ const karmaConfig = {
       cheerio: 'window',
       'react/lib/ExecutionEnvironment': true,
       'react/lib/ReactContext': 'window',
-      'text-encoding': 'window'
+      'text-encoding': 'window',
     },
-    sassLoader: webpackConfig.sassLoader
+    sassLoader: webpackConfig.sassLoader,
   },
   webpackMiddleware: {
-    noInfo: true
+    noInfo: true,
   },
   coverageReporter: {
-    reporters: config.coverage_reporters
-  }
+    reporters: config.coverageReporters,
+  },
 };
 
-if (config.coverage_enabled) {
+if (config.coverageEnabled) {
   karmaConfig.reporters.push('coverage');
   karmaConfig.webpack.module.preLoaders = [{
     test: /\.(js|jsx)$/,
-    include: new RegExp(config.dir_client),
+    include: new RegExp(config.dirClient),
     loader: 'isparta',
-    exclude: /node_modules/
+    exclude: /node_modules/,
   }];
 }
 

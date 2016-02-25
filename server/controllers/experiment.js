@@ -1,25 +1,22 @@
 /* eslint no-param-reassign:0 */
-import monk from 'monk';
 import _debug from 'debug';
-import config from '../serverConf';
 import filter from 'lodash/filter';
+import Compound from '../models/Compound';
+import Experiment from '../models/Experiment';
 
 const debug = _debug('app:server:controllers:experiment');
-const db = monk(config.dbUrl);
-const Compounds = db.get('compounds');
-const Experiments = db.get('experiments');
 
-// Compounds.drop();
+// Compound.drop();
 // Experiments.drop();
 //
-// Experiments.insert({
+// Experiments.create({
 //   title: 'Experiment 1',
 //   type: 'Single Dose',
 //   description: 'Description of Experiment 1. Description of Experiment 1. ' +
 //     'Description of Experiment 1.',
 //   compounds: [],
 // });
-// Experiments.insert({
+// Experiments.create({
 //   title: 'Experiment 2',
 //   type: 'Dose Response',
 //   description: 'Description of Experiment 2. Description of Experiment 2. ' +
@@ -27,42 +24,25 @@ const Experiments = db.get('experiments');
 //   compounds: [],
 // });
 
-Experiments.index('title', { unique: true });
-
 export async function findAll(ctx) {
   if (ctx.method !== 'GET') {
     ctx.throw(400, 'Bad Request');
   }
-  const experiments = await Experiments.find({});
-  const populatedExperiments = [];
-  let index = 0;
-  while (index < experiments.length) {
-    const experiment = experiments[index];
-    // Compounds are currently an array of ids.
-    // Find them and replace them with actual compounds.
-    experiment.compounds = await Compounds.find({
-      _id: {
-        $in: experiment.compounds,
-      },
-    });
-    populatedExperiments.push(experiment);
-    index++;
-  }
-  ctx.body = populatedExperiments;
+  ctx.body = await Experiment.find({}).populate('compounds').exec();
 }
 
 export async function findById(ctx, id) {
   if (ctx.method !== 'GET') {
     ctx.throw(400, 'Bad Request');
   }
-  ctx.body = await Experiments.findById(id);
+  ctx.body = await Experiment.findById(id).exec();
 }
 
 export async function findWithAvailableSpots(ctx) {
   if (ctx.method !== 'GET') {
     ctx.throw(400, 'Bad Request');
   }
-  const experiments = await Experiments.find({});
+  const experiments = await Experiment.find({}).exec();
   // Remove experiments that do not have compound spots available
   // Single Dose experiments contain 360 available spots
   // Dose Response experiments contain 56 available spots
@@ -80,7 +60,7 @@ export async function findCompleted(ctx) {
   if (ctx.method !== 'GET') {
     ctx.throw(400, 'Bad Request');
   }
-  const experiments = await Experiments.find({});
+  const experiments = await Experiment.find({}).exec();
   // Remove experiments that have compound spots available
   // Single Dose experiments contain 360 available spots
   // Dose Response experiments contain 56 available spots
@@ -98,7 +78,7 @@ export async function addExperiment(ctx) {
   if (ctx.method !== 'POST') {
     ctx.throw(400, 'Bad Request');
   }
-  const newExperiment = await Experiments.insert(ctx.request.body);
+  const newExperiment = await Experiment.create(ctx.request.body).exec();
   if (!newExperiment) {
     ctx.throw(400, 'Experiment could not be created.');
   }
@@ -109,7 +89,7 @@ export async function addCompound(ctx, id) {
   if (ctx.method !== 'POST') {
     ctx.throw(400, 'Bad Request');
   }
-  const experiment = await Experiments.findById(id);
+  const experiment = await Experiment.findById(id).exec();
   if (!experiment) {
     ctx.throw(404, 'Experiment not found.');
   }
@@ -118,21 +98,37 @@ export async function addCompound(ctx, id) {
   if (experiment.compounds && experiment.compounds.length >= numCompounds) {
     ctx.throw(400, 'Experiment does not have any available spaces left.');
   }
-  console.log(ctx.request.body);
-  const newCompound = await Compounds.insert(ctx.request.body);
-  console.log(newCompound);
+  const newCompound = await Compound.create(ctx.request.body).exec();
   if (!newCompound) {
     ctx.throw(400, 'Compound request invalid. Please check your request body.');
   }
-  const compounds = experiment.compounds;
-  compounds.push(newCompound);
-  await Experiments.findAndModify({ _id: id }, { $set: { compounds } });
-  ctx.body = await Experiments.findById(id);
+  const compounds = [...experiment.compounds, newCompound._id];
+  ctx.body = await Experiment.findOneAndUpdate(
+    { _id: id },
+    { $set: { compounds } },
+    { new: true },
+  ).exec();
+}
+
+export async function removeCompound(ctx, experimentId, compoundId) {
+  if (ctx.method !== 'POST') {
+    ctx.throw(400, 'Bad Request');
+  }
+  const experiment = await Experiment.findById(experimentId).exec();
+  if (!experiment) {
+    ctx.throw(404, 'Experiment not found.');
+  }
+  const compounds = experiment.compounds.filter((compound) => compound._id !== compoundId);
+  ctx.body = await Experiment.findOneAndUpdate(
+    { _id: experimentId },
+    { $set: { compounds } },
+    { new: true },
+  ).exec();
 }
 
 export async function removeExperiment(ctx, id) {
   if (ctx.method !== 'DELETE') {
     ctx.throw(400, 'Bad Request');
   }
-  ctx.body = await Experiments.remove({ _id: id });
+  ctx.body = await Experiment.findByIdAndRemove(id).exec();
 }

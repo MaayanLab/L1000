@@ -1,7 +1,8 @@
+// Import styles
+import 'bootstrap/scss/bootstrap.scss';
+import 'styles/core.scss';
 import React from 'react';
 import Navigation from 'containers/Navigation';
-// Import default styles
-import 'styles/core.scss';
 import coreStyles from './CoreLayout.scss';
 
 function CoreLayout({ children }) {

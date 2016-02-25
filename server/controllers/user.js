@@ -1,23 +1,19 @@
 /* eslint no-param-reassign:0 */
-import monk from 'monk';
 import _debug from 'debug';
-import config from '../serverConf';
 import nodemailer from 'nodemailer';
 import crypto from 'crypto';
 import omit from 'lodash/omit';
 import { hashPassword, comparePassword, createToken, checkToken } from '../utils';
+import User from '../models/User';
 
 const debug = _debug('app:server:controllers:user');
-const db = monk(config.dbUrl);
-const Users = db.get('users');
-Users.index('email', { unique: true });
 
 export async function checkEmailAvailable(ctx) {
   if (ctx.method !== 'POST') {
     return;
   }
   const { email } = ctx.request.body;
-  const userWithEmail = await Users.find({ email });
+  const userWithEmail = await User.find({ email }).exec();
   if (userWithEmail.length > 0) {
     ctx.throw(400, 'Email already exists');
   }
@@ -41,7 +37,7 @@ export async function register(ctx) {
     total: 0,
   };
 
-  const newUser = await Users.insert(userObj);
+  const newUser = await User.insert(userObj).exec();
   if (!newUser) {
     ctx.throw(400, 'Could not sign up user. Please check your request body.');
   }
@@ -59,7 +55,7 @@ export async function login(ctx) {
   const { email, password } = ctx.request.body;
   let user;
   try {
-    user = await Users.findOne({ email });
+    user = await User.findOne({ email }).exec();
     const passwordMatches = await comparePassword(user.password, password);
     if (!passwordMatches) {
       ctx.throw(401, 'Username/password incorrect. Please try again.');
@@ -94,7 +90,7 @@ export async function resetPassword(ctx) {
   if (!oldPassword || !newPassword) {
     ctx.throw(400, 'Invalid response.');
   }
-  const user = await Users.findOne({ _id: userId });
+  const user = await User.findOne({ _id: userId }).exec();
   if (!user) {
     ctx.throw(404, 'User with given id not found.');
   }
@@ -112,7 +108,7 @@ export async function resetPassword(ctx) {
 
   try {
     const password = await hashPassword(newPassword);
-    await Users.findAndModify({ _id: userId }, { $set: { password } });
+    await User.findOneAndUpdate({ _id: userId }, { $set: { password } }).exec();
     ctx.body = 'Password updated successfully.';
   } catch (e) {
     debug(e);
@@ -124,10 +120,10 @@ export async function getUserFromResetToken(ctx, resetToken) {
   if (ctx.method !== 'GET') {
     return;
   }
-  const user = await Users.findOne({
+  const user = await User.findOne({
     resetToken,
     resetPasswordExpires: { $gt: Date.now() },
-  });
+  }).exec();
   if (!user) {
     ctx.throw(404, 'User not found or token may have expired.');
   }
@@ -147,10 +143,10 @@ export async function forgotPassword(ctx) {
   const token = crypto.randomBytes(20).toString('hex');
   let user;
   try {
-    user = await Users.update({ email }, {
+    user = await User.update({ email }, {
       resetToken: token,
       resetPasswordExpires: Date.now() + 60 * 60, // Token expires in one hour.
-    });
+    }).exec();
   } catch (e) {
     debug(e);
     ctx.throw(500, 'An error occurred resetting password. Try again later.');

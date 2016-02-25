@@ -40,13 +40,13 @@ export class CheckoutView extends Component {
       return (
         <div className="container">
           <h1>No items in cart.</h1>
-          <h3><Link to="/">Return Home.</Link></h3>
+          <h3><Link to="/">Return Home</Link></h3>
         </div>
       );
     }
     return (
       <div className="container">
-        <div className="col-xs-8">
+        <div className="col-xs-8 pull-xs-left">
           <div className="col-xs-4 text-xs-center">
             <h6>Item</h6>
           </div>

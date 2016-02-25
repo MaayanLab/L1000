@@ -9,33 +9,33 @@ const config = {
   // ----------------------------------
   // Project Structure
   // ----------------------------------
-  path_base: path.resolve(__dirname, '../'),
-  dir_client: 'src',
-  dir_dist: 'dist',
-  dir_server: 'server',
-  dir_test: 'tests',
+  pathBase: path.resolve(__dirname, '../'),
+  dirClient: 'src',
+  dirDist: 'dist',
+  dirServer: 'server',
+  dirTest: 'tests',
 
   // ----------------------------------
   // Server Configuration
   // ----------------------------------
-  server_host: 'localhost',
-  server_port: process.env.PORT || 3000,
+  serverHost: 'localhost',
+  serverPort: process.env.PORT || 3000,
 
   // ----------------------------------
   // Compiler Configuration
   // ----------------------------------
-  compiler_css_modules: true,
-  compiler_devtool: 'source-map',
-  compiler_hash_type: 'hash',
-  compiler_fail_on_warning: false,
-  compiler_quiet: false,
-  compiler_public_path: '',
-  compiler_stats: {
+  compilerCssModules: true,
+  compilerDevTool: 'cheap-module-eval-source-map',
+  compilerHashType: 'hash',
+  compilerFailOnWarning: false,
+  compilerQuiet: false,
+  compilerPublicPath: '',
+  compilerStats: {
     chunks: false,
     chunkModules: false,
     colors: true,
   },
-  compiler_vendor: [
+  compilerVendor: [
     'history',
     'react',
     'react-modal',
@@ -54,8 +54,8 @@ const config = {
   // ----------------------------------
   // Test Configuration
   // ----------------------------------
-  coverage_enabled: !argv.watch,
-  coverage_reporters: [
+  coverageEnabled: !argv.watch,
+  coverageReporters: [
     { type: 'text-summary' },
     { type: 'lcov', dir: 'coverage' },
   ],
@@ -92,9 +92,11 @@ config.globals = {
 // ------------------------------------
 const pkg = require('../package.json');
 
-config.compiler_vendor = config.compiler_vendor
+config.compilerVendor = config.compilerVendor
   .filter((dep) => {
-    if (pkg.dependencies[dep]) return true;
+    if (pkg.dependencies[dep]) {
+      return true;
+    }
 
     debug(
       `Package "${dep}" was not found as an npm dependency in package.json; ` +
@@ -106,16 +108,16 @@ config.compiler_vendor = config.compiler_vendor
 // ------------------------------------
 // Utilities
 // ------------------------------------
-config.utils_paths = (() => {
+config.utilsPaths = (() => {
   const resolve = path.resolve;
 
   const base = (...args) =>
-    resolve.apply(resolve, [config.path_base, ...args]);
+    resolve.apply(resolve, [config.pathBase, ...args]);
 
   return {
     base,
-    client: base.bind(null, config.dir_client),
-    dist: base.bind(null, config.dir_dist),
+    client: base.bind(null, config.dirClient),
+    dist: base.bind(null, config.dirDist),
   };
 })();
 

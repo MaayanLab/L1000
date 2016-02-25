@@ -5,13 +5,13 @@ import webpackConfig from '../build/webpack.config';
 import config from '../config';
 
 const debug = _debug('app:bin:compile');
-const paths = config.utils_paths
+const paths = config.utilsPaths;
 
-;(async function () {
+(async () => {
   try {
     debug('Run compiler');
     const stats = await webpackCompiler(webpackConfig);
-    if (stats.warnings.length && config.compiler_fail_on_warning) {
+    if (stats.warnings.length && config.compilerFailOnWarning) {
       debug('Config set to fail on warning, exiting with status code "1".');
       process.exit(1);
     }

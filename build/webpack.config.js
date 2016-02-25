@@ -7,16 +7,16 @@ import config from '../config';
 import _debug from 'debug';
 
 const debug = _debug('app:webpack:config');
-const paths = config.utils_paths;
+const paths = config.utilsPaths;
 const { __DEV__, __PROD__, __TEST__ } = config.globals;
 
 debug('Create configuration.');
 const webpackConfig = {
   name: 'client',
   target: 'web',
-  devtool: config.compiler_devtool,
+  devtool: config.compilerDevTool,
   resolve: {
-    root: paths.base(config.dir_client),
+    root: paths.base(config.dirClient),
     extensions: ['', '.js', '.jsx'],
   },
   module: {},
@@ -24,25 +24,25 @@ const webpackConfig = {
 // ------------------------------------
 // Entry Points
 // ------------------------------------
-const APP_ENTRY_PATH = `${paths.base(config.dir_client)}/main.js`;
+const APP_ENTRY_PATH = `${paths.base(config.dirClient)}/main.js`;
 
 webpackConfig.entry = {
   app: __DEV__
     ? [
       APP_ENTRY_PATH,
-      `webpack-hot-middleware/client?path=${config.compiler_public_path}__webpack_hmr`,
+      `webpack-hot-middleware/client?path=${config.compilerPublicPath}__webpack_hmr`,
     ]
     : [APP_ENTRY_PATH],
-  vendor: config.compiler_vendor,
+  vendor: config.compilerVendor,
 };
 
 // ------------------------------------
 // Bundle Output
 // ------------------------------------
 webpackConfig.output = {
-  filename: `[name].[${config.compiler_hash_type}].js`,
-  path: paths.base(config.dir_dist),
-  publicPath: config.compiler_public_path,
+  filename: `[name].[${config.compilerHashType}].js`,
+  path: paths.base(config.dirDist),
+  publicPath: config.compilerPublicPath,
 };
 
 // ------------------------------------
@@ -140,7 +140,7 @@ webpackConfig.module.loaders = [{
 }];
 
 // Styles
-const cssLoader = !config.compiler_css_modules
+const cssLoader = !config.compilerCssModules
   ? 'css?sourceMap'
   : [
     'css?modules',
