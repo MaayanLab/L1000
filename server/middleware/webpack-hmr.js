@@ -1,3 +1,4 @@
+/* eslint prefer-const: 0 */
 import webpackHotMiddleware from 'webpack-hot-middleware';
 import applyExpressMiddleware from '../lib/apply-express-middleware';
 import _debug from 'debug';
@@ -11,7 +12,6 @@ export default function (compiler, opts) {
 
   return async function koaWebpackHMR(ctx, next) {
     // hasNext is modified later
-    /* eslint prefer-const: 0 */
     let hasNext = await applyExpressMiddleware(middleware, ctx.req, ctx.res);
 
     if (hasNext && next) {
