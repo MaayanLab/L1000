@@ -8,8 +8,11 @@ const mapStateToProps = (state) => ({
   auth: state.auth,
 });
 export default class RegisterView extends Component {
-  _handleRegister = ({ email, password, name, address, phoneNumber }) => {
-    this.props.registerUser(email, password, name, address, phoneNumber);
+  _handleRegister = (user) => {
+    this.props.registerUser({
+      ...user,
+      phoneNumber: user.phoneNumber.replace(/[+()-]/g, ''),
+    });
   };
 
   render() {

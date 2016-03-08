@@ -9,25 +9,20 @@ import Compound from '../models/Compound';
 import Experiment from '../models/Experiment';
 import User from '../models/User';
 
-function calcCartSubtotal(cart) {
-  let subTotal = 0.00;
-  cart.items.forEach((item) => subTotal += item.price * item.quantity);
-  return subTotal;
-}
-
 export async function addToCart(ctx) {
   if (ctx.method !== 'POST') {
     ctx.throw(400, 'Bad Request');
   }
+
   const { experimentId } = ctx.request.body;
   const compound = await Compound.create(ctx.request.body.compound);
   const experiment = await Experiment.findById(experimentId);
-
-  const isSingleDose = experiment.type === 'Single Dose';
-  const price = isSingleDose ? 300.00 : 1500.00;
   if (!compound || !experimentId) {
     ctx.throw(400, 'Compound or Experiment Id not sent with request.');
   }
+
+  const isSingleDose = experiment.type === 'Single Dose';
+  const price = isSingleDose ? 300.00 : 1500.00;
   const userFromToken = await getUserFromHeader(ctx);
   const user = await User.findById(userFromToken._id);
   if (!user.cart || Object.keys(user.cart).length < 1) {
@@ -54,9 +49,10 @@ export async function addToCart(ctx) {
       ctx.throw(500, 'User not updated.');
     }
     // Need to create a new token with new user
-    const userWOPassword = omit(updatedUser, 'password');
+    const userWOPassword = omit(updatedUser.toObject(), ['password', '__v']);
+    const token = await createToken(userWOPassword);
     ctx.body = {
-      token: createToken(userWOPassword),
+      token,
       user: userWOPassword,
     };
   } else {
@@ -80,12 +76,7 @@ export async function addToCart(ctx) {
       });
     }
     cart.items = newCartItems;
-    cart.subTotal = calcCartSubtotal(cart);
 
-    // Need to create a new token with new user
-    // For some reason, findAndModify does not work here.
-    // Update the user and if the update is successful, set the new cart items
-    // On the original user and send that user back in the response.
     const updatedUser = await User.findOneAndUpdate(
       { _id: user._id },
       { $set: { cart } },
@@ -95,9 +86,10 @@ export async function addToCart(ctx) {
       ctx.throw(500, 'User not updated.');
     }
     // Need to create a new token with new user
-    const userWOPassword = omit(updatedUser, 'password');
+    const userWOPassword = omit(updatedUser.toObject(), ['password', '__v']);
+    const token = await createToken(userWOPassword);
     ctx.body = {
-      token: createToken(userWOPassword),
+      token,
       user: userWOPassword,
     };
   }
@@ -108,6 +100,7 @@ export async function removeItemFromCart(ctx) {
     ctx.throw(400, 'Bad Request');
   }
   const { cartId } = ctx.request.body;
+  // cartId can be 0 which is falsy so just check if undefined
   if (cartId === undefined) {
     ctx.throw(400, 'Cart Id not sent with request.');
   }
@@ -116,11 +109,6 @@ export async function removeItemFromCart(ctx) {
   const cart = user.cart;
   const newCartItems = filter(cart.items, (item) => item.cartId !== cartId);
   cart.items = newCartItems;
-  cart.subTotal = calcCartSubtotal(cart);
-  // Need to create a new token with new user
-  // For some reason, findAndModify does not work here.
-  // Update the user and if the update is successful, set the new cart items
-  // On the original user and send that user back in the response.
   const updatedUser = await User.findOneAndUpdate(
     { _id: user._id },
     { $set: { cart } },
@@ -130,9 +118,10 @@ export async function removeItemFromCart(ctx) {
     ctx.throw(500, 'User not updated.');
   }
   // Need to create a new token with new user
-  const userWOPassword = omit(updatedUser, 'password');
+  const userWOPassword = omit(updatedUser.toObject(), ['password', '__v']);
+  const token = await createToken(userWOPassword);
   ctx.body = {
-    token: createToken(userWOPassword),
+    token,
     user: userWOPassword,
   };
 }
@@ -165,10 +154,6 @@ export async function updateQuantity(ctx) {
     ctx.throw(400, 'Item does not exist in cart.');
   }
   cart.items = newCartItems;
-  cart.subTotal = calcCartSubtotal(cart);
-  // For some reason, findAndModify does not work here.
-  // Update the user and if the update is successful, set the new cart items
-  // On the original user and send that user back in the response.
   const updatedUser = await User.findOneAndUpdate(
     { _id: user._id },
     { $set: { cart } },
@@ -178,9 +163,10 @@ export async function updateQuantity(ctx) {
     ctx.throw(500, 'User not updated.');
   }
   // Need to create a new token with new user
-  const userWOPassword = omit(updatedUser, 'password');
+  const userWOPassword = omit(updatedUser.toObject(), ['password', '__v']);
+  const token = await createToken(userWOPassword);
   ctx.body = {
-    token: createToken(userWOPassword),
+    token,
     user: userWOPassword,
   };
 }

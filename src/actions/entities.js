@@ -107,10 +107,6 @@ function addCompoundRequest(compound, experimentId) {
 // Relies on the custom API middleware defined in ../middleware/api.js.
 export function addCompound(compound, experimentId) {
   return (dispatch) =>
-    // const compoundFromState = getState().entities.compounds[compound._id];
-    // if (compoundFromState && isEqual(compound, compoundFromState)) {
-    //   return null;
-    // }
     dispatch(addCompoundRequest(compound, experimentId));
 }
 

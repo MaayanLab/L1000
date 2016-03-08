@@ -3,7 +3,7 @@ import _debug from 'debug';
 import nodemailer from 'nodemailer';
 import crypto from 'crypto';
 import omit from 'lodash/omit';
-import { hashPassword, comparePassword, createToken, checkToken } from '../utils';
+import { createToken, checkToken } from '../utils';
 import User from '../models/User';
 
 const debug = _debug('app:server:controllers:user');
@@ -25,8 +25,6 @@ export async function register(ctx) {
     return;
   }
   const userObj = ctx.request.body;
-  const hashedPass = await hashPassword(userObj.password);
-  userObj.password = hashedPass;
 
   // Add empty cart
   userObj.cart = {
@@ -37,13 +35,14 @@ export async function register(ctx) {
     total: 0,
   };
 
-  const newUser = await User.insert(userObj).exec();
+  const newUser = await User.create(userObj);
   if (!newUser) {
     ctx.throw(400, 'Could not sign up user. Please check your request body.');
   }
-  const userWOPassword = omit(newUser, 'password');
+  const userWOPassword = omit(newUser.toObject(), ['password', '__v']);
+  const token = await createToken(userWOPassword);
   ctx.body = {
-    token: createToken(userWOPassword),
+    token,
     user: userWOPassword,
   };
 }
@@ -56,16 +55,17 @@ export async function login(ctx) {
   let user;
   try {
     user = await User.findOne({ email }).exec();
-    const passwordMatches = await comparePassword(user.password, password);
+    const passwordMatches = await user.comparePassword(password);
     if (!passwordMatches) {
       ctx.throw(401, 'Username/password incorrect. Please try again.');
     }
   } catch (e) {
     ctx.throw(401, 'Username/password incorrect. Please try again.');
   }
-  const userWOPassword = omit(user, 'password');
+  const userWOPassword = omit(user.toObject(), ['password', '__v']);
+  const token = await createToken(userWOPassword);
   ctx.body = {
-    token: createToken(userWOPassword),
+    token,
     user: userWOPassword,
   };
 }
@@ -97,7 +97,7 @@ export async function resetPassword(ctx) {
   // Compare "old password" to current password to make sure that they match.
   let passwordMatches;
   try {
-    passwordMatches = await comparePassword(user.password, oldPassword);
+    passwordMatches = await user.comparePassword(oldPassword);
   } catch (e) {
     ctx.throw(400, 'User Id/Password incorrect.');
   }
@@ -107,8 +107,9 @@ export async function resetPassword(ctx) {
   }
 
   try {
-    const password = await hashPassword(newPassword);
-    await User.findOneAndUpdate({ _id: userId }, { $set: { password } }).exec();
+    // Use save to trigger pre-save hook and hash password.
+    user.password = newPassword;
+    await user.save();
     ctx.body = 'Password updated successfully.';
   } catch (e) {
     debug(e);
@@ -127,7 +128,7 @@ export async function getUserFromResetToken(ctx, resetToken) {
   if (!user) {
     ctx.throw(404, 'User not found or token may have expired.');
   }
-  ctx.body = omit(user, 'password', '__v');
+  ctx.body = omit(user.toObject(), 'password', '__v');
 }
 
 export async function forgotPassword(ctx) {
@@ -143,7 +144,7 @@ export async function forgotPassword(ctx) {
   const token = crypto.randomBytes(20).toString('hex');
   let user;
   try {
-    user = await User.update({ email }, {
+    user = await User.findOneAndUpdate({ email }, {
       resetToken: token,
       resetPasswordExpires: Date.now() + 60 * 60, // Token expires in one hour.
     }).exec();

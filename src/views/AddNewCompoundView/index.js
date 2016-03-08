@@ -9,7 +9,7 @@ import { loadExperiments } from 'actions/entities';
 import { addToCart } from 'actions/cart';
 import AddCompoundForm from 'containers/AddCompoundForm';
 import LoginForm from 'containers/LoginForm';
-import Experiment from 'components/Experiment';
+// import Experiment from 'components/Experiment';
 import styles from './AddNewCompoundView.scss';
 import modalStyles from './modalStyles';
 
@@ -27,17 +27,16 @@ export class AddNewCompoundView extends Component {
     this.props.goBack();
   };
 
-  _handleSubmit = ({ compoundName }) => {
+  _handleSubmit = (compound) => {
     // Rest of compound is taken from user object
     const { params, auth } = this.props;
-    const { name, email, address, phoneNumber } = auth.user;
-    const compound = {
-      submitter: { name, email, address, phoneNumber },
-      name: compoundName,
+    const newCompound = {
+      ...compound,
+      submitter: auth.user._id,
       status: 'reserved',
     };
 
-    this.props.addToCart(compound, params.experimentId);
+    this.props.addToCart(newCompound, params.experimentId);
     this.props.push('/user/cart');
   };
 
@@ -66,21 +65,10 @@ export class AddNewCompoundView extends Component {
             </div>
           </div>
         </Modal>
-        <h1 className="text-xs-center">
+        <h3 className={styles.header}>
           Reserve a Compound in <strong>{experiment.title}</strong>
-        </h1>
+        </h3>
         <div className={styles.wrapper}>
-          <div className={styles.experiment}>
-            {
-              !!entities && !!experiment ?
-              <Experiment
-                width={300}
-                experiment={experiment}
-                compounds={entities.compounds}
-              />
-              : null
-            }
-          </div>
           <AddCompoundForm user={auth.user} onSubmit={this._handleSubmit} />
         </div>
       </div>

@@ -7,12 +7,12 @@ export async function findAll(ctx) {
   if (ctx.method !== 'GET') {
     ctx.throw(400, 'Bad Request');
   }
-  ctx.body = await Compound.find({}).exec();
+  ctx.body = await Compound.find({}).lean().exec();
 }
 
 export async function findById(ctx, id) {
   if (ctx.method !== 'GET') {
     ctx.throw(400, 'Bad Request');
   }
-  ctx.body = await Compound.findById(id).exec();
+  ctx.body = await Compound.findById(id).lean().exec();
 }

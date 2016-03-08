@@ -1,0 +1,34 @@
+@import '~bootstrap/scss/variables';
+
+.form {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+}
+
+.inputs {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+
+}
+
+.full {
+  flex-basis: 100%;
+}
+
+.half {
+  flex-basis: 48%;
+
+  @media (max-width: map-get($grid-breakpoints, md)) {
+    flex-basis: 100%;
+  }
+}
+
+.buttons {
+  align-items: center;
+  display: flex;
+  justify-content: flex-end;
+  width: 100%;
+}

@@ -74,6 +74,7 @@
     "debug": "^2.2.0",
     "extend": "^3.0.0",
     "history": "^2.0.0-rc2",
+    "jsonwebtoken": "^5.7.0",
     "jwt-decode": "^1.5.1",
     "koa": "^2.0.0-alpha.3",
     "koa-bodyparser": "^2.0.1",

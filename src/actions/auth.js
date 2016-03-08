@@ -149,7 +149,7 @@ export function registerUserRequest() {
   };
 }
 
-export function registerUser(email, password, name, address, phoneNumber, redirect = '/') {
+export function registerUser(newUser, redirect = '/') {
   return (dispatch) => {
     dispatch(registerUserRequest());
     return fetch('/L1000/api/v1/users/register', {
@@ -159,7 +159,7 @@ export function registerUser(email, password, name, address, phoneNumber, redire
         Accept: 'application/json',
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ email, password, name, address, phoneNumber }),
+      body: JSON.stringify(newUser),
     })
     .then(response => handleResponse(response))
     .then(response => response.json())

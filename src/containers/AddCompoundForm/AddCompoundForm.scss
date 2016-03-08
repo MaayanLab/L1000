@@ -1,0 +1,55 @@
+@import '~bootstrap/scss/variables';
+@import 'variables';
+
+.form {
+  display: flex;
+  flex-direction: column;
+}
+
+.user-info {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  padding: 0 1rem 1rem;
+
+  fieldset {
+    flex-basis: 100%;
+    margin-bottom: 0;
+  }
+}
+
+.compound-header {
+  margin-bottom: 1rem;
+  width: 100%;
+
+  h5 {
+    color: $teal;
+    margin-bottom: 0;
+  }
+
+  span {
+    color: $orange;
+  }
+}
+
+.compound-info {
+  align-items: center;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  padding: 0 1rem;
+
+  fieldset {
+    flex-basis: 48%;
+
+    @media (max-width: map-get($grid-breakpoints, md)) {
+      flex-basis: 100%;
+    }
+  }
+}
+
+.buttons {
+  align-items: center;
+  display: flex;
+  justify-content: flex-end;
+}

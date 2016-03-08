@@ -28,21 +28,21 @@ export async function findAll(ctx) {
   if (ctx.method !== 'GET') {
     ctx.throw(400, 'Bad Request');
   }
-  ctx.body = await Experiment.find({}).populate('compounds').exec();
+  ctx.body = await Experiment.find({}).populate('compounds').lean().exec();
 }
 
 export async function findById(ctx, id) {
   if (ctx.method !== 'GET') {
     ctx.throw(400, 'Bad Request');
   }
-  ctx.body = await Experiment.findById(id).exec();
+  ctx.body = await Experiment.findById(id).lean().exec();
 }
 
 export async function findWithAvailableSpots(ctx) {
   if (ctx.method !== 'GET') {
     ctx.throw(400, 'Bad Request');
   }
-  const experiments = await Experiment.find({}).exec();
+  const experiments = await Experiment.find({}).lean().exec();
   // Remove experiments that do not have compound spots available
   // Single Dose experiments contain 360 available spots
   // Dose Response experiments contain 56 available spots
@@ -60,7 +60,7 @@ export async function findCompleted(ctx) {
   if (ctx.method !== 'GET') {
     ctx.throw(400, 'Bad Request');
   }
-  const experiments = await Experiment.find({}).exec();
+  const experiments = await Experiment.find({}).lean().exec();
   // Remove experiments that have compound spots available
   // Single Dose experiments contain 360 available spots
   // Dose Response experiments contain 56 available spots
@@ -78,7 +78,7 @@ export async function addExperiment(ctx) {
   if (ctx.method !== 'POST') {
     ctx.throw(400, 'Bad Request');
   }
-  const newExperiment = await Experiment.create(ctx.request.body).exec();
+  const newExperiment = await Experiment.create(ctx.request.body);
   if (!newExperiment) {
     ctx.throw(400, 'Experiment could not be created.');
   }
@@ -98,7 +98,7 @@ export async function addCompound(ctx, id) {
   if (experiment.compounds && experiment.compounds.length >= numCompounds) {
     ctx.throw(400, 'Experiment does not have any available spaces left.');
   }
-  const newCompound = await Compound.create(ctx.request.body).exec();
+  const newCompound = await Compound.create(ctx.request.body);
   if (!newCompound) {
     ctx.throw(400, 'Compound request invalid. Please check your request body.');
   }

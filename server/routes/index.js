@@ -37,7 +37,11 @@ export default function routes(app) {
   // Protected Routes
 
   // Check for a valid JWT in header
-  app.use(convert(jwt({ secret: config.secret, passthrough: true })));
+  app.use(convert(jwt({
+    secret: config.secret,
+    issuer: 'http://amp.pharm.mssm.edu/L1000/',
+    passthrough: true,
+  })));
 
   // Users
   app.use(route.post(`${BASE}/users/password/reset`, user.resetPassword));
