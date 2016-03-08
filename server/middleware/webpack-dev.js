@@ -1,4 +1,4 @@
-/* eslint no-param-reassign:0 */
+/* eslint no-param-reassign:0 prefer-const: 0 */
 import webpackDevMiddleware from 'webpack-dev-middleware';
 import applyExpressMiddleware from '../lib/apply-express-middleware';
 import _debug from 'debug';
@@ -22,7 +22,6 @@ export default function (compiler, publicPath) {
 
   return async function koaWebpackDevMiddleware(ctx, next) {
     // eslint doesn't think so, but hasNext is modified later
-    /* eslint prefer-const: 0 */
     let hasNext = await applyExpressMiddleware(middleware, ctx.req, {
       end: (content) => ctx.body = content,
       setHeader: function setHeader() {
