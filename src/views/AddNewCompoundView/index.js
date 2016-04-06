@@ -48,7 +48,7 @@ export class AddNewCompoundView extends Component {
         <Modal
           className="modal-dialog"
           isOpen={!auth.isAuthenticated}
-          onRequestClose={this.handleModalCloseRequest}
+          onRequestClose={this._handleModalCloseRequest}
           style={modalStyles}
         >
           <div className="modal-content">
